@@ -2,3 +2,6 @@
 .npm
 node_modules/
 jspm_packages/
+
+# Command db for prod running
+commands.json 
