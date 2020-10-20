@@ -5,3 +5,6 @@ jspm_packages/
 
 # Command db for prod running
 commands.json 
+
+# Alias db for prod running
+aliases.json 

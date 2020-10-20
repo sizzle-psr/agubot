@@ -1,42 +1,66 @@
 const fs = require('fs');
+const { sep } = require('path');
 
-// const [first, second] = getValues();
 var command_dict;
+var alias_dict;
 
-function load_command_db() {
-    let rawdata = fs.readFileSync('commands.json');
-    command_dict = JSON.parse(rawdata);
+function load_command_db(path) {
+    if (!fs.existsSync(path)) command_dict = JSON.parse('{}');
+    else {
+        let rawdata = fs.readFileSync(path);
+        command_dict = JSON.parse(rawdata);
+    }
+    // console.log(command_dict);
+}
+
+function load_alias_db(path) {
+    if (!fs.existsSync(path)) alias_dict = JSON.parse('{}');
+    else {
+        let rawdata = fs.readFileSync(path);
+        alias_dict = JSON.parse(rawdata);
+    }
     // console.log(command_dict);
 }
 
 function update_commmand_db() {
-    fs.writeFileSync('commands.json', JSON.stringify(command_dict));
+    fs.writeFileSync(process.env.COMMAND_DB_PATH, JSON.stringify(command_dict));
+}
+
+function update_alias_db() {
+    fs.writeFileSync(process.env.ALIAS_DB_PATH, JSON.stringify(alias_dict));
 }
 
 function command_handler(separated) {
-    var ret;
     // TODO add -help
-    if (separated[1] === "add") { // Simple command added
+    if (separated[1] === "add") {
         if (separated[2] in command_dict) { // The command exists
-            ret = [RetCodes.ERROR, "Command " + command_name + ' already exists.'];
-        } else {
-            separated.shift(); //removes "!command"
+            return [RetCodes.ERROR, "Command " + separated[2] + ' already exists.'];
+        } 
+
+        if (separated[2] in alias_dict) { // The command exists as an alias
+            return [RetCodes.ERROR, "Command " + separated[2] + ' already exists as an alias.'];
+        }
+
+        separated.shift(); //removes "!command"
+        separated.shift(); //removes "add"
+        let command_name = separated[0];
+        separated.shift(); //removes the command name
+        command_dict[command_name] = separated.join(' ');
+        update_commmand_db();
+        ret = [RetCodes.CREATED, 'Command ' + command_name + ' was added.'];
+
+    } else if (separated[1] === "edit") {
+        if (separated[2] in command_dict) {
+            separated.shift(); 
             separated.shift(); //removes "add"
             let command_name = separated[0];
             separated.shift(); //removes the command name
             command_dict[command_name] = separated.join(' ');
             update_commmand_db();
-            ret = [RetCodes.CREATED, 'Command ' + command_name + ' was added.'];
+            ret = [RetCodes.CREATED, 'Command ' + command_name + ' was edited.'];
+        } else {
+            ret = [RetCodes.ERROR, "Command " + separated[2] + ' does not exist.'];
         }
-    } else if (separated[1] === "!add") { // Complex command added
-        // TODO
-        ret = [RetCodes.ERROR, 'Functionality not yet implemented'];
-    } else if (separated[1] === "edit") { // Simple command edit
-        // TODO
-        ret = [RetCodes.ERROR, 'Functionality not yet implemented'];
-    } else if (separated[1] === "!edit") { // Complex command edit
-        // TODO
-        ret = [RetCodes.ERROR, 'Functionality not yet implemented'];
     } else if (separated[1] === "delete") {
         let command_name = separated[2];
         if (command_name in command_dict) {
@@ -61,13 +85,15 @@ const RetCodes = {
     MODIFIED: 3,
 };
 
-function command_parser(command) {
+function command_parser(command, userstate) {
     var reply;
     var separated = command.split(' ');
     if (separated[0] in command_dict) { // Check if its a simple command
         reply = [RetCodes.OK, command_dict[separated[0]]];
     } else if (separated[0] === '!command_test') { // Check if it's a complex command
         reply = command_handler(separated);
+    } else if (separated[0] === '!alias_test') { // Check if it's a complex command
+        reply = alias_handler(separated);
     } else { // TODO add more complex commands
         reply = [RetCodes.NOT_FOUND, ''];
     }
@@ -75,4 +101,7 @@ function command_parser(command) {
     return reply;
 }
 
-module.exports = {command_parser, load_command_db, RetCodes};
+module.exports = {command_parser, 
+                  load_command_db,
+                  load_alias_db, 
+                  RetCodes};
