@@ -1,6 +1,7 @@
 const tmi = require('tmi.js');
 const dotenv = require('dotenv').config();
 const commands = require('./src/commands');
+const ret_codes = require('./src/utils/retcodes');
 
 // Define configuration options
 const opts = {
@@ -35,7 +36,7 @@ function onMessageHandler (target, userstate, msg, self) {
   const commandName = msg.trim();
   let ret = commands.command_parser(commandName, userstate);
   
-  if (ret[0] !== commands.RetCodes.NOT_FOUND) {
+  if (ret[0] !== ret_codes.RetCodes.NOT_FOUND) {
     client.say(target, ret[1]);
   } 
 
