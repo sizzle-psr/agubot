@@ -1,5 +1,6 @@
 const fs = require('fs');
 const choose = require('./complex-cmds/choose');
+const src = require('./complex-cmds/src');
 const ret_codes = require('./utils/retcodes');
 
 var command_dict;
@@ -121,7 +122,7 @@ function alias_handler(separated) {
 
 }
 
-function command_parser(command, userstate /*Can be undefined*/) { 
+function command_parser(command, userstate /*Can be undefined*/, client, target) { 
     var reply;
     var separated = command.split(' ');
     if (separated[0] === '!command_test') { // Check if it's a command modification (mod only)
@@ -137,6 +138,10 @@ function command_parser(command, userstate /*Can be undefined*/) {
     } else if (separated[0] === '!choose_test') { // Check if its an alias
 
         reply = choose.handler(separated);
+
+    } if (separated[0] === '!src_test') { // Check if its an alias
+
+        reply = src.handler(separated, client, target);
 
     } else if (separated[0] in command_dict) { // Check if its a simple command
 
