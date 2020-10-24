@@ -35,11 +35,11 @@ function onMessageHandler (target, userstate, msg, self) {
   // Remove whitespace from chat message
   const commandName = msg.trim();
   
-    const ret = commands.command_parser(commandName, userstate, client, target);
-    if (ret[0] !== ret_codes.RetCodes.NOT_FOUND) {
-      client.say(target, ret[1]);
-    } 
-  }
+  const ret = commands.command_parser(commandName, userstate, client, target);
+  if (ret[0] !== ret_codes.RetCodes.NOT_FOUND && ret[1] !== '') {
+    client.say(target, ret[1]);
+  } 
+}
 
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler (addr, port) {

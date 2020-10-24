@@ -72,7 +72,7 @@ function handler(separated, client, target) {
                 variables[res_json.data[variable].id] = res_json.data[variable].values.default;
             }
         }
-        if (Object.keys(variables).length < 1) {
+        if (Object.keys(variables).length < 1 && subcategory) {
             client.say(target, subcategory + ' is not a valid subcategory of ' + game + ' ' + category + '.');
             return;
         }
