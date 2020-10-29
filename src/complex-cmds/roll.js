@@ -1,4 +1,4 @@
-const { RetCodes } = require("../utils/retcodes");
+const { RetCodes } = require('../utils/retcodes');
 
 
 function handler(separated) {
@@ -7,7 +7,7 @@ function handler(separated) {
     }
     let max = Number(separated[1]);
 
-    if (max <= 0 ) {
+    if (!Number.isInteger(max) || max <= 0 ) {
         return [RetCodes.ERROR, 'AngryVoHiYo'];
     }
     

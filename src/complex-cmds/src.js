@@ -120,7 +120,7 @@ function handler(separated, client, target) {
         let run_time_iso = run.run.times.primary;
 
         // Convert ISO8601 to readable format
-        run_time = run_time_iso.replace("PT","").replace("H",":").replace("M",":").replace("S","");
+        run_time = run_time_iso.replace('PT','').replace('H',':').replace('M',':').replace('S','');
         run_time = run_time.split(':');
         let tmp = run_time[0];
         run_time.shift();

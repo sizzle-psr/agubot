@@ -1,7 +1,9 @@
+const { re } = require('mathjs');
 const tmi = require('tmi.js');
 const dotenv = require('dotenv').config();
 const commands = require('./src/commands');
 const ret_codes = require('./src/utils/retcodes');
+const data = require('./src/utils/data');
 
 // Define configuration options
 const opts = {
@@ -16,6 +18,9 @@ const opts = {
 
 commands.load_command_db(process.env.COMMAND_DB_PATH);
 commands.load_alias_db(process.env.COMMAND_DB_PATH);
+commands.load_permission_db(process.env.PERMISSION_DB_PATH);
+data.load_pokemon_db(process.env.POKEMON_DB_PATH);
+data.load_move_db(process.env.MOVE_DB_PATH);
 
 // Create a client with our options
 const client = new tmi.client(opts);
@@ -47,5 +52,5 @@ function onConnectedHandler (addr, port) {
 }
 
 function onDisconnectedHandler(reason) {
-  console.log("I got disconnected because " + reason);
+  console.log('I got disconnected because ' + reason);
 }

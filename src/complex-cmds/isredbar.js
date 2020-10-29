@@ -1,4 +1,4 @@
-const { RetCodes } = require("../utils/retcodes");
+const { RetCodes } = require('../utils/retcodes');
 
 
 function handler(separated, client, target) {
@@ -12,7 +12,7 @@ function handler(separated, client, target) {
     let maxhp = Number(fraction[1]);
     let ratio = current_hp/maxhp;
 
-    if (ratio > 1 || ratio <= 0 ) {
+    if (!Number.isInteger(maxhp) || !Number.isInteger(current_hp) || ratio > 1 || ratio <= 0 ) {
         return [RetCodes.ERROR, 'AngryVoHiYo'];
     }
 

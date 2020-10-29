@@ -8,3 +8,6 @@ commands.json
 
 # Alias db for prod running
 aliases.json 
+
+# permissons db for prod running
+permissions.json
