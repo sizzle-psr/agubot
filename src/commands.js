@@ -9,6 +9,7 @@ const roll = require('./complex-cmds/roll');
 const expr = require('./complex-cmds/expr');
 const ret_codes = require('./utils/retcodes');
 const { RetCodes } = require('./utils/retcodes');
+const { sep } = require('path');
 
 var command_dict;
 var alias_dict;
@@ -227,7 +228,7 @@ function command_parser(command, userstate /*Can be undefined*/, client, target)
 
     } else if (separated[0] === '!randmon_test') {
 
-        reply = randmon.handler();
+        reply = randmon.handler(separated);
 
     } else if (separated[0] === '!metronome_test') {
 
