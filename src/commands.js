@@ -7,6 +7,7 @@ const torrent = require('./complex-cmds/torrent');
 const isredbar = require('./complex-cmds/isredbar');
 const roll = require('./complex-cmds/roll');
 const expr = require('./complex-cmds/expr');
+const quote = require('./complex-cmds/quote');
 const ret_codes = require('./utils/retcodes');
 const { RetCodes } = require('./utils/retcodes');
 const { sep } = require('path');
@@ -205,84 +206,80 @@ function command_parser(command, userstate /*Can be undefined*/, client, target)
     var reply;
     var separated = command.split(' ');
     separated[0] = separated[0].toLowerCase();
-    if (separated[0] === '!command_test') { // Check if it's a command modification (mod only)
+
+    switch (separated[0]) {
         
-        if (userstate && userstate.mod) reply = command_handler(separated);
-        else {
-            reply = [ret_codes.RetCodes.ERROR, ''];
-        }
-
-    } else if (separated[0] === '!alias_test') { // Check if it's an alias modification
-
-        if (userstate && userstate.mod) reply = alias_handler(separated);
-        else reply = [ret_codes.RetCodes.ERROR, ''];
-
-    } else if (separated[0] === '!permission_test') { // Check if it's an alias modification
-
-        if (userstate && userstate.mod) reply = permission_handler(separated);
-        else reply = [ret_codes.RetCodes.ERROR, ''];
-
-    } else if (separated[0] === '!choose_test') {
-
-        reply = choose.handler(separated);
-
-    } else if (separated[0] === '!randmon_test') {
-
-        reply = randmon.handler(separated);
-
-    } else if (separated[0] === '!metronome_test') {
-
-        reply = metronome.handler();
-
-    } else if (separated[0] === '!src_test') {
-
-        reply = src.handler(separated, client, target);
-
-    } else if (separated[0] === '!torrent_test') { 
-
-        reply = torrent.handler(separated);
-
-    } else if (separated[0] === '!isredbar_test') { 
-
-        reply = isredbar.handler(separated, client, target);
-
-    } else if (separated[0] === '!roll_test') {
-
-        reply = roll.handler(separated);
-
-    } else if (separated[0] === '!expr_test') {
-
-        reply = expr.handler(separated);
-
-    } else if (separated[0] in command_dict) { // Check if its a simple command
+        case '!command_test':
+            if (userstate && userstate.mod) reply = command_handler(separated);
+            else reply = [ret_codes.RetCodes.ERROR, ''];
+            break;
         
-        if (userstate && checkPermission(userstate, separated[0])) {
-            reply = [ret_codes.RetCodes.OK, command_dict[separated[0]]];
-        } else {
-            reply = [RetCodes.FORBIDDEN, ''];
-            // Send whisper to user to not clog chat up
-            console.log(userstate.username);
-            client.whisper(userstate.username, 'You do not have permission to use ' + separated[0]);
-        }
+        case '!alias_test':
+            if (userstate && userstate.mod) reply = alias_handler(separated);
+            else reply = [ret_codes.RetCodes.ERROR, ''];
+            break;
+        
+        case '!permission_test':
+            if (userstate && userstate.mod) reply = permission_handler(separated);
+            else reply = [ret_codes.RetCodes.ERROR, ''];
+            break;
 
-    } else if (separated[0] in alias_dict) { // Check if its an alias
+        case '!choose_test':
+            reply = choose.handler(separated);
+            break;
+        
+        case '!randmon_test':
+            reply = randmon.handler(separated);
+            break;
+        
+        case '!metronome_test':
+            reply = metronome.handler();
+            break;
 
-        if (userstate && checkPermission(userstate, separated[0])) {
-            reply = command_parser(alias_dict[separated[0]], userstate);
-        } else {
-            reply = [RetCodes.FORBIDDEN, ''];
-            // Send whisper to user to not clog chat up
-            client.whisper(userstate.username, 'You do not have permission to use ' + separated[0]);
-        }
+        case '!src_test':
+            reply = src.handler(separated, client, target);
+            break;
 
+        case '!torrent_test':
+            reply = torrent.handler(separated);
+            break;
 
-    } else { // TODO add more complex commands
+        case '!isredbar_test':
+            reply = isredbar.handler(separated, client, target);
+            break;
 
-        reply = [ret_codes.RetCodes.NOT_FOUND, ''];
+        case '!roll_test':
+            reply = roll.handler(separated);
+            break;
 
+        case '!expr_test':
+            reply = expr.handler(separated);
+            break;
+
+        case '!quote_test': 
+            reply = quote.handler(separated);
+            break;
+
+        default:
+            if (separated[0] in command_handler) {
+                if (userstate && checkPermission(userstate, separated[0])) {
+                    reply = [ret_codes.RetCodes.OK, command_dict[separated[0]]];
+                } else {
+                    reply = [RetCodes.FORBIDDEN, ''];
+                    // Send whisper to user to not clog chat up
+                    client.whisper(userstate.username, 'You do not have permission to use ' + separated[0]);
+                }
+            } else if (separated[0] in alias_dict) {
+                if (userstate && checkPermission(userstate, separated[0])) {
+                    reply = command_parser(alias_dict[separated[0]], userstate);
+                } else {
+                    reply = [RetCodes.FORBIDDEN, ''];
+                    // Send whisper to user to not clog chat up
+                    client.whisper(userstate.username, 'You do not have permission to use ' + separated[0]);
+                }
+            } else reply = [ret_codes.RetCodes.NOT_FOUND, ''];
     }
     return reply;
-
 }
 
 module.exports = {command_parser, 
