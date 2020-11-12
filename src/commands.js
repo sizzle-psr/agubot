@@ -9,6 +9,7 @@ const roll = require("./complex-cmds/roll");
 const expr = require("./complex-cmds/expr");
 const quote = require("./complex-cmds/quote");
 const slots = require("./complex-cmds/slots");
+const weather = require("./complex-cmds/weather");
 const ret_codes = require("./utils/retcodes");
 const { sep } = require("path");
 
@@ -56,7 +57,7 @@ function update_permission_db() {
 }
 
 function command_handler(separated) {
-  if (separated.length !== 3)
+  if (separated.length < 5)
     return [
       ret_codes.RetCodes.ERROR,
       "Correct syntax: !command <operation> <name> [command]",
@@ -135,7 +136,7 @@ function command_handler(separated) {
 }
 
 function alias_handler(separated) {
-  if (separated.length !== 3)
+  if (separated.length < 5)
     return [
       ret_codes.RetCodes.ERROR,
       "Correct syntax: !alias <operation> <name> [command]",
@@ -327,13 +328,19 @@ function command_parser(
       reply = slots.handler(client, target, userstate.username);
       break;
 
+    case "!weather_test":
+      if (userstate && userstate.mod && process.env.WEATHER_API_KEY)
+        reply = weather.handler(separated, client, target);
+      else reply = [ret_codes.RetCodes.ERROR, ""];
+      break;
+
     case "!quote_test":
       if (userstate && userstate.mod) reply = quote.handler(separated);
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
     default:
-      if (separated[0] in command_handler) {
+      if (separated[0] in command_dict) {
         if (userstate && checkPermission(userstate, separated[0])) {
           reply = [ret_codes.RetCodes.OK, command_dict[separated[0]]];
         } else {
@@ -356,6 +363,7 @@ function command_parser(
           );
         }
       } else reply = [ret_codes.RetCodes.NOT_FOUND, ""];
+      break;
   }
   return reply;
 }
