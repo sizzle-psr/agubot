@@ -2,6 +2,7 @@
 .npm
 node_modules/
 jspm_packages/
+.vscode/
 
 # Command db for prod running
 commands.json 
@@ -14,3 +15,7 @@ permissions.json
 
 # Quote db for prod running
 quotes.json
+
+# Cooldown db for prod running
+cds_dict.json
+cds_index.json

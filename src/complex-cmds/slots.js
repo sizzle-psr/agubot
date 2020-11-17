@@ -82,7 +82,6 @@ function handler(client, target, user) {
     var res_json4 = await res4.json();
 
     for (entry in res_json4.sets) {
-      console.log(res_json4.sets[entry]);
       for (i in res_json4.sets[entry].emotiocons) {
         emotes.push(res_json3.sets[entry].emotiocons[i].name);
       }

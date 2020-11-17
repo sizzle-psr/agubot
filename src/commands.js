@@ -10,12 +10,17 @@ const expr = require("./complex-cmds/expr");
 const quote = require("./complex-cmds/quote");
 const slots = require("./complex-cmds/slots");
 const weather = require("./complex-cmds/weather");
+const cooldown = require("./complex-cmds/cooldowns");
 const ret_codes = require("./utils/retcodes");
 const { sep } = require("path");
+const { handler } = require("./complex-cmds/slots");
+const { columnDependencies } = require("mathjs");
 
 var command_dict;
 var alias_dict;
 var permission_dict;
+
+var complex_cmds = ["!randmon", "!metronome", "!src", "!slots", "!weather"];
 
 function load_command_db(path) {
   if (!fs.existsSync(path)) command_dict = JSON.parse("{}");
@@ -244,6 +249,11 @@ function permission_handler(separated) {
       ret_codes.RetCodes.OK,
       "Permission for " + separated[2] + " was updated.",
     ];
+  } else {
+    return [
+      ret_codes.RetCodes.ERROR,
+      separated[2] + " is not an existing alias/command.",
+    ];
   }
 }
 
@@ -297,15 +307,27 @@ function command_parser(
       break;
 
     case "!randmon_test":
-      reply = randmon.handler(separated);
+      if (!cooldown.is_on_cooldown(userstate.username, "!randmon")) {
+        reply = randmon.handler(separated);
+      } else {
+        reply = [ret_codes.RetCodes.ERROR, ""];
+      }
       break;
 
     case "!metronome_test":
-      reply = metronome.handler();
+      if (!cooldown.is_on_cooldown(userstate.username, "!metronome")) {
+        reply = metronome.handler();
+      } else {
+        reply = [ret_codes.RetCodes.ERROR, ""];
+      }
       break;
 
     case "!src_test":
-      reply = src.handler(separated, client, target);
+      if (!cooldown.is_on_cooldown(userstate.username, "!metronome")) {
+        reply = src.handler(separated, client, target);
+      } else {
+        reply = [ret_codes.RetCodes.ERROR, ""];
+      }
       break;
 
     case "!torrent_test":
@@ -325,18 +347,49 @@ function command_parser(
       break;
 
     case "!slots_test":
-      reply = slots.handler(client, target, userstate.username);
+      if (!cooldown.is_on_cooldown(userstate.username, "!slots")) {
+        reply = slots.handler(client, target, userstate.username);
+      } else {
+        reply = [ret_codes.RetCodes.ERROR, ""];
+      }
       break;
 
     case "!weather_test":
-      if (userstate && userstate.mod && process.env.WEATHER_API_KEY)
+      if (
+        userstate &&
+        userstate.mod &&
+        process.env.WEATHER_API_KEY &&
+        !cooldown.is_on_cooldown(userstate.username, "!weather")
+      )
         reply = weather.handler(separated, client, target);
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
     case "!quote_test":
-      if (userstate && userstate.mod) reply = quote.handler(separated);
+      if (
+        userstate &&
+        userstate.mod &&
+        !cooldown.is_on_cooldown(userstate.username, "!quote")
+      )
+        reply = quote.handler(separated);
       else reply = [ret_codes.RetCodes.ERROR, ""];
+      break;
+
+    case "!cooldown_test":
+      if (
+        userstate &&
+        userstate.mod &&
+        (complex_cmds.includes(separated[2]) ||
+          separated[2] in command_dict ||
+          separated[2] in alias_dict)
+      ) {
+        reply = cooldown.handler(separated);
+      } else {
+        reply = [
+          ret_codes.ERROR,
+          "You cannot add a cooldown to " + separated[2] + ".",
+        ];
+      }
       break;
 
     default:

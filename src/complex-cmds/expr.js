@@ -37,7 +37,21 @@ function handler(separated) {
   }
   separated.shift();
   let expression = separated.join(" ");
-  return [RetCodes.OK, String(limitedEvaluate(expression))];
+  var expression_filtered = expression
+    .match(/[0-9.+\-()^/\*a-zA-Z%!&|<>\ ]*/g, "")
+    .join("");
+  if (expression != expression_filtered) {
+    return [
+      RetCodes.ERROR,
+      "That is not a valid expression. Please check any typos and try again.",
+    ];
+  }
+  try {
+    var ret = limitedEvaluate(expression);
+    return [RetCodes.OK, String(ret)];
+  } catch {
+    return [RetCodes.ERROR, "Error when evaluating the expression."];
+  }
 }
 
 module.exports = { handler };

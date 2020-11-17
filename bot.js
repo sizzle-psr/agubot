@@ -5,6 +5,7 @@ const commands = require("./src/commands");
 const quotes = require("./src/complex-cmds/quote");
 const ret_codes = require("./src/utils/retcodes");
 const data = require("./src/utils/data");
+const cooldowns = require("./src/complex-cmds/cooldowns");
 
 // Define configuration options
 const opts = {
@@ -21,6 +22,7 @@ commands.load_permission_db(process.env.PERMISSION_DB_PATH);
 data.load_pokemon_db(process.env.POKEMON_DB_PATH);
 data.load_move_db(process.env.MOVE_DB_PATH);
 quotes.load_quote_db(process.env.QUOTE_DB_PATH);
+cooldowns.load_cds(process.env.CDS_DICT_DB_PATH, process.env.CDS_INDEX_DB_PATH);
 
 // Create a client with our options
 const client = new tmi.client(opts);

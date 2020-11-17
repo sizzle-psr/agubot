@@ -19,7 +19,7 @@ function handler(separated) {
   else if (gen_num == 5) num_pokes = 649;
   else if (gen_num == 6) num_pokes = 721;
   else if (gen_num == 7) num_pokes = 809;
-  else num_pokes = lobal.pokemon_db.length;
+  else num_pokes = global.pokemon_db.length;
 
   let num = Math.floor(Math.random() * num_pokes);
   return [
