@@ -1,4 +1,5 @@
 const fs = require("fs");
+const data = require("./complex-cmds/data");
 const choose = require("./complex-cmds/choose");
 const randmon = require("./complex-cmds/randmon");
 const metronome = require("./complex-cmds/metronome");
@@ -300,6 +301,10 @@ function command_parser(
     case "!permission_test":
       if (userstate && userstate.mod) reply = permission_handler(separated);
       else reply = [ret_codes.RetCodes.ERROR, ""];
+      break;
+
+    case "!data_test":
+      reply = data.handler();
       break;
 
     case "!choose_test":

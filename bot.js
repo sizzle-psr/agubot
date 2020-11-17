@@ -1,10 +1,11 @@
-const { re } = require("mathjs");
+const { re, intersect } = require("mathjs");
 const tmi = require("tmi.js");
 const dotenv = require("dotenv").config();
 const commands = require("./src/commands");
 const quotes = require("./src/complex-cmds/quote");
 const ret_codes = require("./src/utils/retcodes");
 const data = require("./src/utils/data");
+const data_command = require("./src/complex-cmds/data");
 const cooldowns = require("./src/complex-cmds/cooldowns");
 
 // Define configuration options
@@ -27,10 +28,27 @@ cooldowns.load_cds(process.env.CDS_DICT_DB_PATH, process.env.CDS_INDEX_DB_PATH);
 // Create a client with our options
 const client = new tmi.client(opts);
 
+global.viewer_average = -1;
+global.peak = 0;
+global.new_subs = 0;
+global.resubs = 0;
+global.gifted = 0;
+global.bits = 0;
+
+data_command.getViewerAverage();
+setInterval(data_command.getViewerAverage, 180000);
+
 // Register our event handlers (defined below)
 client.on("message", onMessageHandler);
 client.on("connected", onConnectedHandler);
 client.on("disconnected", onDisconnectedHandler);
+
+// Data for
+client.on("cheer", onCheerHandler);
+client.on("giftpaidupgrade", onSubHandler);
+client.on("resub", onSubHandler);
+client.on("subgift", onGiftSubHandler);
+client.on("subscription", onNewSubHandler);
 
 // Connect to Twitch:
 client.connect();
@@ -57,4 +75,20 @@ function onConnectedHandler(addr, port) {
 
 function onDisconnectedHandler(reason) {
   console.log("I got disconnected because " + reason);
+}
+
+function onCheerHandler() {
+  global.bits += Number(userstate.bits);
+}
+
+function onSubHandler() {
+  global.resubs++;
+}
+
+function onGiftSubHandler() {
+  global.gifted++;
+}
+
+function onNewSubHandler() {
+  global.new_subs++;
 }

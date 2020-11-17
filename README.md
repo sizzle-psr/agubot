@@ -1,2 +1,3 @@
-# psr-bot
-A general purpose twitch bot for the Pokémon Speedrunning Community
+# agubot
+
+Another General Purpose Twitch Bot for the Pokémon Speedrunning Community
