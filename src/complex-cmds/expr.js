@@ -49,7 +49,7 @@ function handler(separated) {
   try {
     var ret = limitedEvaluate(expression);
     return [RetCodes.OK, String(ret)];
-  } catch {
+  } catch (error) {
     return [RetCodes.ERROR, "Error when evaluating the expression."];
   }
 }
