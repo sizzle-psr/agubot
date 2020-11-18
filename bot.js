@@ -35,8 +35,8 @@ global.resubs = 0;
 global.gifted = 0;
 global.bits = 0;
 
+global.fetch_viewers = setInterval(data_command.getViewerAverage, 180000);
 data_command.getViewerAverage();
-setInterval(data_command.getViewerAverage, 180000);
 
 // Register our event handlers (defined below)
 client.on("message", onMessageHandler);
@@ -59,6 +59,10 @@ function onMessageHandler(target, userstate, msg, self) {
     return;
   } // Ignore messages from the bot
 
+  if (global.fetch_viewers === 0) {
+    global.fetch_viewers = setInterval(data_command.getViewerAverage, 180000);
+    data_command.getViewerAverage();
+  }
   // Remove whitespace from chat message
   const commandName = msg.trim();
 
