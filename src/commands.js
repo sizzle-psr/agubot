@@ -63,16 +63,15 @@ function update_permission_db() {
 }
 
 function command_handler(separated) {
-  if (separated.length < 5)
-    return [
-      ret_codes.RetCodes.ERROR,
-      "Correct syntax: !command <operation> <name> [command]",
-    ];
-
   separated[1] = separated[1].toLowerCase();
   separated[2] = separated[2].toLowerCase();
 
-  if (separated[1] === "add") {
+  if (separated[1] === "add" && separated.length < 4) {
+    if (separated.length < 4)
+      return [
+        ret_codes.RetCodes.ERROR,
+        "Correct syntax: !command <operation> <name> [command]",
+      ];
     if (separated[2] in command_dict) {
       // The command exists
       return [
@@ -99,7 +98,7 @@ function command_handler(separated) {
       ret_codes.RetCodes.CREATED,
       "Command " + command_name + " was added.",
     ];
-  } else if (separated[1] === "edit") {
+  } else if (separated[1] === "edit" && separated.length < 4) {
     if (separated[2] in command_dict) {
       separated.shift();
       separated.shift(); //removes 'add'
@@ -117,7 +116,7 @@ function command_handler(separated) {
         "Command " + separated[2] + " does not exist.",
       ];
     }
-  } else if (separated[1] === "delete") {
+  } else if (separated[1] === "delete" && separated.length < 3) {
     let command_name = separated[2];
     if (command_name in command_dict) {
       delete command_dict[command_name];
@@ -135,23 +134,17 @@ function command_handler(separated) {
   } else {
     ret = [
       ret_codes.RetCodes.ERROR,
-      "Wrong syntax error. See <path-to-link-of-docs> for more information",
+      "Correct syntax: !command <operation> <name> [command]",
     ];
   }
   return ret;
 }
 
 function alias_handler(separated) {
-  if (separated.length < 5)
-    return [
-      ret_codes.RetCodes.ERROR,
-      "Correct syntax: !alias <operation> <name> [command]",
-    ];
-
   separated[1] = separated[1].toLowerCase();
   separated[2] = separated[2].toLowerCase();
 
-  if (separated[1] === "add") {
+  if (separated[1] === "add" && separated.length < 4) {
     if (separated[2] in alias_dict) {
       // The alias exists
       return [
@@ -175,7 +168,7 @@ function alias_handler(separated) {
     alias_dict[alias_name] = separated.join(" ");
     update_alias_db();
     ret = [ret_codes.RetCodes.CREATED, "Alias " + alias_name + " was added."];
-  } else if (separated[1] === "edit") {
+  } else if (separated[1] === "edit" && separated.length < 4) {
     if (separated[2] in alias_dict) {
       separated.shift();
       separated.shift(); //removes 'add'
@@ -193,7 +186,7 @@ function alias_handler(separated) {
         "Alias " + separated[2] + " does not exist.",
       ];
     }
-  } else if (separated[1] === "delete") {
+  } else if (separated[1] === "delete" && separated.length < 3) {
     let alias_name = separated[2];
     if (alias_name in alias_dict) {
       delete alias_dict[alias_name];
@@ -211,13 +204,18 @@ function alias_handler(separated) {
   } else {
     ret = [
       ret_codes.RetCodes.ERROR,
-      "Wrong syntax error. See <path-to-link-of-docs> for more information",
+      "Correct syntax: !alias <operation> <name> [command]",
     ];
   }
   return ret;
 }
 
 function permission_handler(separated) {
+  if (separated.length < 3)
+    return [
+      ret_codes.RetCodes.ERROR,
+      "Correct Syntax: !permission <role> <command>",
+    ];
   if (separated[2] in command_dict || separated[2] in alias_dict) {
     if (separated[1] === "vip") {
       permission_dict[separated[2]] = 0;
@@ -289,17 +287,20 @@ function command_parser(
 
   switch (separated[0]) {
     case "!command_test":
-      if (userstate && userstate.mod) reply = command_handler(separated);
+      if (userstate && (userstate.mod || "broadcaster" in userstate.badges))
+        reply = command_handler(separated);
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
     case "!alias_test":
-      if (userstate && userstate.mod) reply = alias_handler(separated);
+      if (userstate && (userstate.mod || "broadcaster" in userstate.badges))
+        reply = alias_handler(separated);
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
     case "!permission_test":
-      if (userstate && userstate.mod) reply = permission_handler(separated);
+      if (userstate && (userstate.mod || "broadcaster" in userstate.badges))
+        reply = permission_handler(separated);
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
@@ -362,7 +363,7 @@ function command_parser(
     case "!weather_test":
       if (
         userstate &&
-        userstate.mod &&
+        (userstate.mod || "broadcaster" in userstate.badges) &&
         process.env.WEATHER_API_KEY &&
         !cooldown.is_on_cooldown(userstate.username, "!weather")
       )
@@ -373,7 +374,7 @@ function command_parser(
     case "!quote_test":
       if (
         userstate &&
-        userstate.mod &&
+        (userstate.mod || "broadcaster" in userstate.badges) &&
         !cooldown.is_on_cooldown(userstate.username, "!quote")
       )
         reply = quote.handler(separated);
@@ -383,7 +384,7 @@ function command_parser(
     case "!cooldown_test":
       if (
         userstate &&
-        userstate.mod &&
+        (userstate.mod || "broadcaster" in userstate.badges) &&
         (complex_cmds.includes(separated[2]) ||
           separated[2] in command_dict ||
           separated[2] in alias_dict)
