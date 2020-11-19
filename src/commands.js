@@ -402,24 +402,10 @@ function command_parser(
       if (separated[0] in command_dict) {
         if (userstate && checkPermission(userstate, separated[0])) {
           reply = [ret_codes.RetCodes.OK, command_dict[separated[0]]];
-        } else {
-          reply = [RetCodes.FORBIDDEN, ""];
-          // Send whisper to user to not clog chat up
-          client.whisper(
-            userstate.username,
-            "You do not have permission to use " + separated[0]
-          );
         }
       } else if (separated[0] in alias_dict) {
         if (userstate && checkPermission(userstate, separated[0])) {
           reply = command_parser(alias_dict[separated[0]], userstate);
-        } else {
-          reply = [RetCodes.FORBIDDEN, ""];
-          // Send whisper to user to not clog chat up
-          client.whisper(
-            userstate.username,
-            "You do not have permission to use " + separated[0]
-          );
         }
       } else reply = [ret_codes.RetCodes.NOT_FOUND, ""];
       break;
