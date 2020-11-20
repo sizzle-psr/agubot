@@ -279,7 +279,7 @@ function command_parser(
   separated[0] = separated[0].toLowerCase();
 
   switch (separated[0]) {
-    case "!command_test":
+    case "!command":
       if (
         userstate &&
         (userstate.mod || "broadcaster" in userstate.badges) &&
@@ -289,7 +289,7 @@ function command_parser(
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
-    case "!alias_test":
+    case "!alias":
       if (
         userstate &&
         (userstate.mod || "broadcaster" in userstate.badges) &&
@@ -299,7 +299,7 @@ function command_parser(
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
-    case "!permission_test":
+    case "!permission":
       if (
         userstate &&
         (userstate.mod || "broadcaster" in userstate.badges) &&
@@ -309,15 +309,15 @@ function command_parser(
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
-    case "!data_test":
+    case "!data":
       reply = data.handler();
       break;
 
-    case "!choose_test":
+    case "!choose":
       reply = choose.handler(separated);
       break;
 
-    case "!randmon_test":
+    case "!randmon":
       if (!cooldown.is_on_cooldown(userstate.username, "!randmon")) {
         reply = randmon.handler(separated);
       } else {
@@ -325,7 +325,7 @@ function command_parser(
       }
       break;
 
-    case "!metronome_test":
+    case "!metronome":
       if (!cooldown.is_on_cooldown(userstate.username, "!metronome")) {
         reply = metronome.handler();
       } else {
@@ -333,7 +333,7 @@ function command_parser(
       }
       break;
 
-    case "!src_test":
+    case "!src":
       if (!cooldown.is_on_cooldown(userstate.username, "!metronome")) {
         reply = src.handler(separated, client, target);
       } else {
@@ -341,23 +341,23 @@ function command_parser(
       }
       break;
 
-    case "!torrent_test":
+    case "!torrent":
       reply = torrent.handler(separated);
       break;
 
-    case "!isredbar_test":
+    case "!isredbar":
       reply = isredbar.handler(separated, client, target);
       break;
 
-    case "!roll_test":
+    case "!roll":
       reply = roll.handler(separated);
       break;
 
-    case "!expr_test":
+    case "!expr":
       reply = expr.handler(separated);
       break;
 
-    case "!slots_test":
+    case "!slots":
       if (!cooldown.is_on_cooldown(userstate.username, "!slots")) {
         reply = slots.handler(client, target, userstate.username);
       } else {
@@ -365,7 +365,7 @@ function command_parser(
       }
       break;
 
-    case "!weather_test":
+    case "!weather":
       if (
         userstate &&
         (userstate.mod || "broadcaster" in userstate.badges) &&
@@ -376,7 +376,7 @@ function command_parser(
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
-    case "!quote_test":
+    case "!quote":
       if (
         userstate &&
         (userstate.mod || "broadcaster" in userstate.badges) &&
@@ -386,7 +386,7 @@ function command_parser(
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
-    case "!cooldown_test":
+    case "!cooldown":
       if (
         userstate &&
         (userstate.mod || "broadcaster" in userstate.badges) &&
