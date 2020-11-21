@@ -282,7 +282,8 @@ function command_parser(
     case "!command":
       if (
         userstate &&
-        (userstate.mod || "broadcaster" in userstate.badges) &&
+        (userstate.mod ||
+          (userstate.badges && "broadcaster" in userstate.badges)) &&
         !(separated[2] in complex_cmds)
       )
         reply = command_handler(separated);
@@ -292,7 +293,8 @@ function command_parser(
     case "!alias":
       if (
         userstate &&
-        (userstate.mod || "broadcaster" in userstate.badges) &&
+        (userstate.mod ||
+          (userstate.badges && "broadcaster" in userstate.badges)) &&
         !(separated[2] in complex_cmds)
       )
         reply = alias_handler(separated);
@@ -302,7 +304,8 @@ function command_parser(
     case "!permission":
       if (
         userstate &&
-        (userstate.mod || "broadcaster" in userstate.badges) &&
+        (userstate.mod ||
+          (userstate.badges && "broadcaster" in userstate.badges)) &&
         !(separated[2] in complex_cmds)
       )
         reply = permission_handler(separated);
@@ -368,7 +371,8 @@ function command_parser(
     case "!weather":
       if (
         userstate &&
-        (userstate.mod || "broadcaster" in userstate.badges) &&
+        (userstate.mod ||
+          (userstate.badges && "broadcaster" in userstate.badges)) &&
         process.env.WEATHER_API_KEY &&
         !cooldown.is_on_cooldown(userstate.username, "!weather")
       )
@@ -379,7 +383,8 @@ function command_parser(
     case "!quote":
       if (
         userstate &&
-        (userstate.mod || "broadcaster" in userstate.badges) &&
+        (userstate.mod ||
+          (userstate.badges && "broadcaster" in userstate.badges)) &&
         !cooldown.is_on_cooldown(userstate.username, "!quote")
       )
         reply = quote.handler(separated);
@@ -389,7 +394,8 @@ function command_parser(
     case "!cooldown":
       if (
         userstate &&
-        (userstate.mod || "broadcaster" in userstate.badges) &&
+        (userstate.mod ||
+          (userstate.badges && "broadcaster" in userstate.badges)) &&
         (complex_cmds.includes(separated[2]) ||
           separated[2] in command_dict ||
           separated[2] in alias_dict)
