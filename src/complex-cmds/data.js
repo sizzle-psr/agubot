@@ -28,9 +28,13 @@ function getViewerAverage() {
     var res_json2 = await res2.json();
 
     if ("data" in res_json2 && res_json2.data.length > 0) {
+      global.num_polls++;
       let curr_viewers = Number(res_json2.data[0].viewer_count);
       if (global.viewer_average === -1) global.viewer_average = curr_viewers;
-      else global.viewer_average = (global.viewer_average + curr_viewers) / 2;
+      else
+        global.viewer_average =
+          (global.viewer_average * (global.num_polls - 1) + curr_viewers) /
+          global.num_polls;
       if (curr_viewers > global.peak) {
         global.peak = curr_viewers;
       }
@@ -43,6 +47,7 @@ function getViewerAverage() {
       global.bits = 0;
       clearInterval(global.fetch_viewers);
       global.fetch_viewers = 0;
+      global.num_polls = 0;
     }
   };
 
@@ -50,6 +55,7 @@ function getViewerAverage() {
 }
 
 function handler() {
+  getViewerAverage();
   if (global.viewer_average != -1) {
     return [
       ret_codes.RetCodes.OK,

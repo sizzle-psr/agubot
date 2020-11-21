@@ -39,6 +39,7 @@ cooldowns.load_cds(global.CDS_DICT_DB_PATH, global.CDS_INDEX_DB_PATH);
 const client = new tmi.client(opts);
 
 global.viewer_average = -1;
+global.num_polls = 0;
 global.peak = 0;
 global.new_subs = 0;
 global.resubs = 0;
