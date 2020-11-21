@@ -19,14 +19,11 @@ function load_cds(path_dict, path_index) {
 }
 
 function update_dict_db() {
-  fs.writeFileSync(process.env.CDS_DICT_DB_PATH, JSON.stringify(cooldown_dict));
+  fs.writeFileSync(global.CDS_DICT_DB_PATH, JSON.stringify(cooldown_dict));
 }
 
 function update_index_db() {
-  fs.writeFileSync(
-    process.env.CDS_INDEX_DB_PATH,
-    JSON.stringify(cooldown_index)
-  );
+  fs.writeFileSync(global.CDS_INDEX_DB_PATH, JSON.stringify(cooldown_index));
 }
 
 function is_on_cooldown(username, command) {

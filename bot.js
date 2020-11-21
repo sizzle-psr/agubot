@@ -17,13 +17,23 @@ const opts = {
   channels: [process.env.CHANNEL_NAME],
 };
 
-commands.load_command_db(process.env.COMMAND_DB_PATH);
-commands.load_alias_db(process.env.COMMAND_DB_PATH);
-commands.load_permission_db(process.env.PERMISSION_DB_PATH);
-data.load_pokemon_db(process.env.POKEMON_DB_PATH);
-data.load_move_db(process.env.MOVE_DB_PATH);
-quotes.load_quote_db(process.env.QUOTE_DB_PATH);
-cooldowns.load_cds(process.env.CDS_DICT_DB_PATH, process.env.CDS_INDEX_DB_PATH);
+global.COMMAND_DB_PATH = "./data/commands.json";
+global.ALIAS_DB_PATH = "./data/aliases.json";
+global.PERMISSION_DB_PATH = "./data/permissions.json";
+global.QUOTE_DB_PATH = "./data/quotes.json";
+global.POKEMON_DB_PATH = "./data/pokemon.json";
+global.MOVE_DB_PATH = "./data/moves.json";
+global.CDS_DICT_DB_PATH = "./data/cds_dict.json";
+global.CDS_INDEX_DB_PATH = "./data/cds_index.json";
+global.TOPCHATTERS_DB = "./data/topchatters.json";
+
+commands.load_command_db();
+commands.load_alias_db();
+commands.load_permission_db();
+data.load_pokemon_db(global.POKEMON_DB_PATH);
+data.load_move_db(global.MOVE_DB_PATH);
+quotes.load_quote_db(global.QUOTE_DB_PATH);
+cooldowns.load_cds(global.CDS_DICT_DB_PATH, global.CDS_INDEX_DB_PATH);
 
 // Create a client with our options
 const client = new tmi.client(opts);

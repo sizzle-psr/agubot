@@ -23,43 +23,41 @@ var permission_dict;
 
 var complex_cmds = ["!randmon", "!metronome", "!src", "!slots", "!weather"];
 
-function load_command_db(path) {
-  if (!fs.existsSync(path)) command_dict = JSON.parse("{}");
+function load_command_db() {
+  if (!fs.existsSync(global.COMMAND_DB_PATH)) command_dict = JSON.parse("{}");
   else {
-    let rawdata = fs.readFileSync(path);
+    let rawdata = fs.readFileSync(global.COMMAND_DB_PATH);
     command_dict = JSON.parse(rawdata);
   }
 }
 
-function load_alias_db(path) {
-  if (!fs.existsSync(path)) alias_dict = JSON.parse("{}");
+function load_alias_db() {
+  if (!fs.existsSync(global.ALIAS_DB_PATH)) alias_dict = JSON.parse("{}");
   else {
-    let rawdata = fs.readFileSync(path);
+    let rawdata = fs.readFileSync(global.ALIAS_DB_PATH);
     alias_dict = JSON.parse(rawdata);
   }
 }
 
-function load_permission_db(path) {
-  if (!fs.existsSync(path)) permission_dict = JSON.parse("{}");
+function load_permission_db() {
+  if (!fs.existsSync(global.PERMISSION_DB_PATH))
+    permission_dict = JSON.parse("{}");
   else {
-    let rawdata = fs.readFileSync(path);
+    let rawdata = fs.readFileSync(pglobal.PERMISSION_DB_PATHath);
     permission_dict = JSON.parse(rawdata);
   }
 }
 
 function update_commmand_db() {
-  fs.writeFileSync(process.env.COMMAND_DB_PATH, JSON.stringify(command_dict));
+  fs.writeFileSync(global.COMMAND_DB_PATH, JSON.stringify(command_dict));
 }
 
 function update_alias_db() {
-  fs.writeFileSync(process.env.ALIAS_DB_PATH, JSON.stringify(alias_dict));
+  fs.writeFileSync(global.ALIAS_DB_PATH, JSON.stringify(alias_dict));
 }
 
 function update_permission_db() {
-  fs.writeFileSync(
-    process.env.PERMISSION_DB_PATH,
-    JSON.stringify(permission_dict)
-  );
+  fs.writeFileSync(global.PERMISSION_DB_PATH, JSON.stringify(permission_dict));
 }
 
 function command_handler(separated) {
@@ -67,11 +65,6 @@ function command_handler(separated) {
   separated[2] = separated[2].toLowerCase();
 
   if (separated[1] === "add" && separated.length >= 4) {
-    if (separated.length >= 4)
-      return [
-        ret_codes.RetCodes.ERROR,
-        "Correct syntax: !command <operation> <name> [command]",
-      ];
     if (separated[2] in command_dict) {
       // The command exists
       return [
@@ -287,19 +280,31 @@ function command_parser(
 
   switch (separated[0]) {
     case "!command_test":
-      if (userstate && (userstate.mod || "broadcaster" in userstate.badges))
+      if (
+        userstate &&
+        (userstate.mod || "broadcaster" in userstate.badges) &&
+        !(separated[2] in complex_cmds)
+      )
         reply = command_handler(separated);
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
     case "!alias_test":
-      if (userstate && (userstate.mod || "broadcaster" in userstate.badges))
+      if (
+        userstate &&
+        (userstate.mod || "broadcaster" in userstate.badges) &&
+        !(separated[2] in complex_cmds)
+      )
         reply = alias_handler(separated);
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
     case "!permission_test":
-      if (userstate && (userstate.mod || "broadcaster" in userstate.badges))
+      if (
+        userstate &&
+        (userstate.mod || "broadcaster" in userstate.badges) &&
+        !(separated[2] in complex_cmds)
+      )
         reply = permission_handler(separated);
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;

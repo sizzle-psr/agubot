@@ -23,7 +23,7 @@ function update_quote_db() {
   for (var i = 0; i < quote_list.length; i++) {
     quote_dict[i] = quote_list[i];
   }
-  fs.writeFileSync(process.env.QUOTE_DB_PATH, JSON.stringify(quote_dict));
+  fs.writeFileSync(global.QUOTE_DB_PATH, JSON.stringify(quote_dict));
 }
 
 function handler(separated) {
