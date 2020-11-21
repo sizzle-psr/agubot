@@ -18,4 +18,4 @@ quotes.json
 
 # Cooldown db for prod running
 cds_dict.json
-cds_index.json
+#cds_index.json
