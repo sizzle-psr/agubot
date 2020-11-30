@@ -381,13 +381,8 @@ function command_parser(
       break;
 
     case "!quote":
-      if (
-        userstate &&
-        (userstate.mod ||
-          (userstate.badges && "broadcaster" in userstate.badges)) &&
-        !cooldown.is_on_cooldown(userstate.username, "!quote")
-      )
-        reply = quote.handler(separated);
+      if (!cooldown.is_on_cooldown(userstate.username, "!quote"))
+        reply = quote.handler(separated, userstate);
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
@@ -416,7 +411,12 @@ function command_parser(
         }
       } else if (separated[0] in alias_dict) {
         if (userstate && checkPermission(userstate, separated[0])) {
-          reply = command_parser(alias_dict[separated[0]], userstate);
+          reply = command_parser(
+            alias_dict[separated[0]],
+            userstate,
+            client,
+            target
+          );
         }
       } else reply = [ret_codes.RetCodes.NOT_FOUND, ""];
       break;

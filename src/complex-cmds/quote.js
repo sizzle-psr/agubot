@@ -26,7 +26,7 @@ function update_quote_db() {
   fs.writeFileSync(global.QUOTE_DB_PATH, JSON.stringify(quote_dict));
 }
 
-function handler(separated) {
+function handler(separated, userstate) {
   // !quote [add, delete] <user> <quote>
   if (separated.length < 2) {
     if (quote_list.length === 0) {
@@ -46,77 +46,85 @@ function handler(separated) {
   }
 
   if (separated[1] === "add") {
-    if (separated.length < 4) {
+    if (
+      userstate &&
+      (userstate.mod || (userstate.badges && "broadcaster" in userstate.badges))
+    ) {
+      if (separated.length < 4) {
+        return [
+          ret_codes.RetCodes.ERROR,
+          "Correct Syntax: !quote add <user> <quote>",
+        ];
+      }
+
+      let size = quote_list.length;
+      quote_list.push(JSON.parse("{}"));
+      quote_list[size].user = separated[2];
+      separated.shift();
+      separated.shift();
+      separated.shift();
+      let quote = separated.join(" ");
+      quote_list[size].quote = quote;
+      update_quote_db();
       return [
-        ret_codes.RetCodes.ERROR,
-        "Correct Syntax: !quote add <user> <quote>",
+        ret_codes.RetCodes.OK,
+        "Quote #" + (size + 1) + " by " + quote_list[size].user + " was added.",
       ];
-    }
+    } else return [ret_codes.RetCodes.ERROR, ""];
+  } else if (separated[1] === "delete") {
+    if (
+      userstate &&
+      (userstate.mod || (userstate.badges && "broadcaster" in userstate.badges))
+    ) {
+      if (separated.length !== 3) {
+        return [
+          ret_codes.RetCodes.ERROR,
+          "Correct Syntax: !quote delete <number>",
+        ];
+      }
 
-    let size = quote_list.length;
-    quote_list.push(JSON.parse("{}"));
-    quote_list[size].user = separated[2];
-    separated.shift();
-    separated.shift();
-    separated.shift();
-    let quote = separated.join(" ");
-    quote_list[size].quote = quote;
-    update_quote_db();
-    return [
-      ret_codes.RetCodes.OK,
-      "Quote #" + (size + 1) + " by " + quote_list[size].user + " was added.",
-    ];
-  }
+      let num = Number(separated[2]);
 
-  if (separated[1] === "delete") {
-    if (separated.length !== 3) {
-      return [
-        ret_codes.RetCodes.ERROR,
-        "Correct Syntax: !quote delete <number>",
-      ];
-    }
+      if (!Number.isInteger(num) || num < 1) {
+        return [
+          ret_codes.RetCodes.ERROR,
+          "Please provide a positive integer for the quote number.",
+        ];
+      }
 
-    let num = Number(separated[2]);
-
-    if (!Number.isInteger(num) || num < 1) {
+      if (num > quote_list.length) {
+        return [ret_codes.RetCodes.ERROR, "Quote #" + num + " does not exist."];
+      }
+      delete quote_list[num - 1];
+      quote_list.splice(num - 1, 1);
+      update_quote_db();
+      return [ret_codes.RetCodes.OK, "Quote #" + num + " was deleted."];
+    } else return [ret_codes.RetCodes.ERROR, ""];
+  } else {
+    let num_quote = Number(separated[1]);
+    if (!Number.isInteger(num_quote) || num_quote < 1) {
       return [
         ret_codes.RetCodes.ERROR,
         "Please provide a positive integer for the quote number.",
       ];
     }
-
-    if (num > quote_list.length) {
-      return [ret_codes.RetCodes.ERROR, "Quote #" + num + " does not exist."];
+    if (num_quote > quote_list.length) {
+      return [
+        ret_codes.RetCodes.ERROR,
+        "Quote #" + num_quote + " does not exist.",
+      ];
     }
-    delete quote_list[num - 1];
-    quote_list.splice(num - 1, 1);
-    update_quote_db();
-    return [ret_codes.RetCodes.OK, "Quote #" + num + " was deleted."];
-  }
 
-  let num_quote = Number(separated[1]);
-  if (!Number.isInteger(num_quote) || num_quote < 1) {
     return [
-      ret_codes.RetCodes.ERROR,
-      "Please provide a positive integer for the quote number.",
+      ret_codes.RetCodes.OK,
+      "Quote #" +
+        num_quote +
+        " by " +
+        quote_list[num_quote - 1].user +
+        ": " +
+        quote_list[num_quote - 1].quote,
     ];
   }
-  if (num_quote > quote_list.length) {
-    return [
-      ret_codes.RetCodes.ERROR,
-      "Quote #" + num_quote + " does not exist.",
-    ];
-  }
-
-  return [
-    ret_codes.RetCodes.OK,
-    "Quote #" +
-      num_quote +
-      " by " +
-      quote_list[num_quote - 1].user +
-      ": " +
-      quote_list[num_quote - 1].quote,
-  ];
 }
 
 module.exports = { handler, load_quote_db };

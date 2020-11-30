@@ -66,20 +66,24 @@ client.connect();
 
 // Called every time a message comes in
 function onMessageHandler(target, userstate, msg, self) {
-  if (self) {
-    return;
-  } // Ignore messages from the bot
+  try {
+    if (self) {
+      return;
+    } // Ignore messages from the bot
 
-  if (global.fetch_viewers === 0) {
-    global.fetch_viewers = setInterval(data_command.getViewerAverage, 180000);
-    data_command.getViewerAverage();
-  }
-  // Remove whitespace from chat message
-  const commandName = msg.trim();
+    if (global.fetch_viewers === 0) {
+      global.fetch_viewers = setInterval(data_command.getViewerAverage, 180000);
+      data_command.getViewerAverage();
+    }
+    // Remove whitespace from chat message
+    const commandName = msg.trim();
 
-  const ret = commands.command_parser(commandName, userstate, client, target);
-  if (ret[0] !== ret_codes.RetCodes.NOT_FOUND && ret[1] !== "") {
-    client.say(target, ret[1]);
+    const ret = commands.command_parser(commandName, userstate, client, target);
+    if (ret[0] !== ret_codes.RetCodes.NOT_FOUND && ret[1] !== "") {
+      client.say(target, ret[1]);
+    }
+  } catch (error) {
+    console.log('"' + msg + '" failed its execution due to ' + error.message);
   }
 }
 
@@ -92,7 +96,7 @@ function onDisconnectedHandler(reason) {
   console.log("I got disconnected because " + reason);
 }
 
-function onCheerHandler() {
+function onCheerHandler(target, userstate, message) {
   global.bits += Number(userstate.bits);
 }
 

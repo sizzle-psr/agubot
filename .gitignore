@@ -5,17 +5,17 @@ jspm_packages/
 .vscode/
 
 # Command db for prod running
-commands.json 
+# commands.json 
 
 # Alias db for prod running
-aliases.json 
+# aliases.json 
 
 # Permissons db for prod running
-permissions.json
+# permissions.json
 
 # Quote db for prod running
-quotes.json
+# quotes.json
 
 # Cooldown db for prod running
-cds_dict.json
+# cds_dict.json
 #cds_index.json
