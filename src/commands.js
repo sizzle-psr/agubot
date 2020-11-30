@@ -43,7 +43,7 @@ function load_permission_db() {
   if (!fs.existsSync(global.PERMISSION_DB_PATH))
     permission_dict = JSON.parse("{}");
   else {
-    let rawdata = fs.readFileSync(pglobal.PERMISSION_DB_PATHath);
+    let rawdata = fs.readFileSync(global.PERMISSION_DB_PATH);
     permission_dict = JSON.parse(rawdata);
   }
 }
