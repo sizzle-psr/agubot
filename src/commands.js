@@ -13,9 +13,6 @@ const slots = require("./complex-cmds/slots");
 const weather = require("./complex-cmds/weather");
 const cooldown = require("./complex-cmds/cooldowns");
 const ret_codes = require("./utils/retcodes");
-const { sep } = require("path");
-const { handler } = require("./complex-cmds/slots");
-const { columnDependencies } = require("mathjs");
 
 var command_dict;
 var alias_dict;
@@ -60,7 +57,7 @@ function update_permission_db() {
   fs.writeFileSync(global.PERMISSION_DB_PATH, JSON.stringify(permission_dict));
 }
 
-function command_handler(separated) {
+function command_handler(separated, redis_client) {
   separated[1] = separated[1].toLowerCase();
   separated[2] = separated[2].toLowerCase();
 
@@ -86,7 +83,11 @@ function command_handler(separated) {
     let command_name = separated[0];
     separated.shift(); //removes the command name
     command_dict[command_name] = separated.join(" ");
-    update_commmand_db();
+
+    // Upload to redis
+    redis_client.set(command_name, separated.join(" "));
+
+    // update_commmand_db();
     ret = [
       ret_codes.RetCodes.CREATED,
       "Command " + command_name + " was added.",
@@ -272,7 +273,8 @@ function command_parser(
   command,
   userstate /*Can be undefined*/,
   client,
-  target
+  target,
+  redis_client
 ) {
   var reply;
   var separated = command.split(" ");
@@ -286,7 +288,7 @@ function command_parser(
           (userstate.badges && "broadcaster" in userstate.badges)) &&
         !(separated[2] in complex_cmds)
       )
-        reply = command_handler(separated);
+        reply = command_handler(separated, redis_client);
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
@@ -337,7 +339,7 @@ function command_parser(
       break;
 
     case "!src":
-      if (!cooldown.is_on_cooldown(userstate.username, "!metronome")) {
+      if (!cooldown.is_on_cooldown(userstate.username, "!src")) {
         reply = src.handler(separated, client, target);
       } else {
         reply = [ret_codes.RetCodes.ERROR, ""];
@@ -405,6 +407,13 @@ function command_parser(
       break;
 
     default:
+      redis_client.exists(separated, (error, value) => {
+        if (value) {
+         console.log('Key does exist')
+        } else {
+         console.log('Key does not exist')
+        }
+       })
       if (separated[0] in command_dict) {
         if (userstate && checkPermission(userstate, separated[0])) {
           reply = [ret_codes.RetCodes.OK, command_dict[separated[0]]];

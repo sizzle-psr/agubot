@@ -1,4 +1,3 @@
-const { re, intersect } = require("mathjs");
 const tmi = require("tmi.js");
 const dotenv = require("dotenv").config();
 const commands = require("./src/commands");
@@ -7,6 +6,7 @@ const ret_codes = require("./src/utils/retcodes");
 const data = require("./src/utils/data");
 const data_command = require("./src/complex-cmds/data");
 const cooldowns = require("./src/complex-cmds/cooldowns");
+const redis = require('redis');
 
 // Define configuration options
 const opts = {
@@ -14,7 +14,11 @@ const opts = {
     username: process.env.BOT_USERNAME,
     password: process.env.OAUTH_TOKEN,
   },
-  channels: [process.env.CHANNEL_NAME],
+  channels: [
+    'sizzleskeleton',
+    'amoebauk'
+  ],
+  joinInterval: 3000,
 };
 
 global.COMMAND_DB_PATH = "./data/commands.json";
@@ -34,6 +38,8 @@ data.load_pokemon_db(global.POKEMON_DB_PATH);
 data.load_move_db(global.MOVE_DB_PATH);
 quotes.load_quote_db(global.QUOTE_DB_PATH);
 cooldowns.load_cds(global.CDS_DICT_DB_PATH, global.CDS_INDEX_DB_PATH);
+
+var redis_client = redis.createClient(process.env.REDISCLOUD_URL, {no_ready_check: true});
 
 // Create a client with our options
 const client = new tmi.client(opts);
@@ -65,7 +71,7 @@ client.on("subscription", onNewSubHandler);
 client.connect();
 
 // Called every time a message comes in
-function onMessageHandler(target, userstate, msg, self) {
+function onMessageHandler(channel, userstate, msg, self) {
   try {
     if (self) {
       return;
@@ -78,9 +84,9 @@ function onMessageHandler(target, userstate, msg, self) {
     // Remove whitespace from chat message
     const commandName = msg.trim();
 
-    const ret = commands.command_parser(commandName, userstate, client, target);
+    const ret = commands.command_parser(commandName, userstate, client, channel, redis_client);
     if (ret[0] !== ret_codes.RetCodes.NOT_FOUND && ret[1] !== "") {
-      client.say(target, ret[1]);
+      client.say(channel, ret[1]);
     }
   } catch (error) {
     console.log('"' + msg + '" failed its execution due to ' + error.message);
