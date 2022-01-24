@@ -13,6 +13,7 @@ const slots = require("./complex-cmds/slots");
 const weather = require("./complex-cmds/weather");
 const cooldown = require("./complex-cmds/cooldowns");
 const ret_codes = require("./utils/retcodes");
+const { channel } = require("tmi.js/lib/utils");
 
 var command_dict;
 var alias_dict;
@@ -20,187 +21,210 @@ var permission_dict;
 
 var complex_cmds = ["!randmon", "!metronome", "!src", "!slots", "!weather"];
 
-function load_command_db() {
-  if (!fs.existsSync(global.COMMAND_DB_PATH)) command_dict = JSON.parse("{}");
-  else {
-    let rawdata = fs.readFileSync(global.COMMAND_DB_PATH);
-    command_dict = JSON.parse(rawdata);
-  }
+// function load_command_db() {
+//   if (!fs.existsSync(global.COMMAND_DB_PATH)) command_dict = JSON.parse("{}");
+//   else {
+//     let rawdata = fs.readFileSync(global.COMMAND_DB_PATH);
+//     command_dict = JSON.parse(rawdata);
+//   }
+// }
+
+// function load_alias_db() {
+//   if (!fs.existsSync(global.ALIAS_DB_PATH)) alias_dict = JSON.parse("{}");
+//   else {
+//     let rawdata = fs.readFileSync(global.ALIAS_DB_PATH);
+//     alias_dict = JSON.parse(rawdata);
+//   }
+// }
+
+// function load_permission_db() {
+//   if (!fs.existsSync(global.PERMISSION_DB_PATH))
+//     permission_dict = JSON.parse("{}");
+//   else {
+//     let rawdata = fs.readFileSync(global.PERMISSION_DB_PATH);
+//     permission_dict = JSON.parse(rawdata);
+//   }
+// }
+
+// function update_commmand_db() {
+//   fs.writeFileSync(global.COMMAND_DB_PATH, JSON.stringify(command_dict));
+// }
+
+// function update_alias_db() {
+//   fs.writeFileSync(global.ALIAS_DB_PATH, JSON.stringify(alias_dict));
+// }
+
+// function update_permission_db() {
+//   fs.writeFileSync(global.PERMISSION_DB_PATH, JSON.stringify(permission_dict));
+// }
+
+// async function fetchCommandFromChannel(command, channel, pg_client) {
+//   const query = {
+//     text: 'SELECT * FROM command WHERE channel = $1 AND name = $2',
+//     values: [channel, command],
+//   };
+
+//   await pg_client
+//   .query(query)
+//   .then(res => {
+//     return [res.rows.length, res.rows]
+//   })
+//   .catch(e => {
+//     console.log("Could not fetch command/alias.");
+//     console.error(e.stack);
+//     return [-1, null];
+//   });
+// }
+
+function insertCommandFromChannel(command, output, channel, isAlias, pg_client) {
+  const query = {
+    text: 'INSERT INTO command (name,output,channel,isAlias) VALUES ($1, $2, $3, $4)',
+    values: [command, output, channel, isAlias],
+  };
+
+  pg_client
+  .query(query)
+  .then(res => console.log("Inserted: " + res.rows[0]))
+  .catch(e => console.error("DATABASE ERROR: " + e.stack));
 }
 
-function load_alias_db() {
-  if (!fs.existsSync(global.ALIAS_DB_PATH)) alias_dict = JSON.parse("{}");
-  else {
-    let rawdata = fs.readFileSync(global.ALIAS_DB_PATH);
-    alias_dict = JSON.parse(rawdata);
-  }
+function updateCommandOutput(command, channel, output, pg_client) {
+  const query = {
+    text: 'UPDATE command SET output = $1 WHERE channel = $2 AND name = $3',
+    values: [output, channel, command],
+  };
+
+  pg_client
+  .query(query)
+  .then(res => console.log("Updated: " + res.rows[0]))
+  .catch(e => console.error("DATABASE ERROR: " + e.stack));
 }
 
-function load_permission_db() {
-  if (!fs.existsSync(global.PERMISSION_DB_PATH))
-    permission_dict = JSON.parse("{}");
-  else {
-    let rawdata = fs.readFileSync(global.PERMISSION_DB_PATH);
-    permission_dict = JSON.parse(rawdata);
-  }
+function deleteCommandFromChannel(command, channel, pg_client) {
+  const query = {
+    text: 'DELETE FROM command WHERE channel = $1 AND name = $2',
+    values: [channel, command],
+  };
+
+  pg_client
+  .query(query)
+  .then(res => console.log("Deleted: " + res.rows[0]))
+  .catch(e => console.error("DATABASE ERROR: " + e.stack));
 }
 
-function update_commmand_db() {
-  fs.writeFileSync(global.COMMAND_DB_PATH, JSON.stringify(command_dict));
+async function async_handler(client, separated, pg_client, channel, isAlias) {
+  const query = {
+    text: 'SELECT * FROM command WHERE channel = $1 AND name = $2',
+    values: [channel, separated[2]],
+  };
+
+  await pg_client
+  .query(query)
+  .then(res => {
+    // Successful fetch
+    if (separated[1] === "add") {
+      if (res.rows.length === 0) {
+        // Process string
+        separated.shift(); //removes '!command'
+        separated.shift(); //removes 'add'
+        let command_name = separated[0];
+        separated.shift(); //removes the command name
+
+        // Upload to db
+        insertCommandFromChannel(
+          command_name,
+          separated.join(" "),
+          channel,
+          isAlias,
+          pg_client
+        );
+        if (!isAlias) {
+          client.say(channel, "Command " + command_name + " was added");
+        } else {
+          client.say(channel, "Alias " + command_name + " was added");
+        }
+      } else {
+        if (!isAlias) {
+          client.say(channel, "Command " + command_name + " already exists");
+        } else {
+          client.say(channel, "Alias " + command_name + " already exists");
+        }
+      }
+    } else if (separated[1] === "edit") {
+      if (res.rows.length === 1) {
+        // Process string
+        separated.shift(); //removes '!command'
+        separated.shift(); //removes 'edit'
+        let command_name = separated[0];
+        separated.shift(); //removes the command name
+
+        // Upload to db
+        updateCommandOutput(command_name, channel, separated.join(" "), pg_client);
+
+        if (!isAlias) {
+          client.say(channel, "Command " + command_name + " was updated");
+        } else {
+          client.say(channel, "Alias " + command_name + " was updated");
+        }
+      } else {
+        if (!isAlias) {
+          client.say(channel, "Command " + command_name + " does not exist");
+        } else {
+          client.say(channel, "Alias " + command_name + " does not exist");
+        }
+      }
+    } else { // Must be delete
+      if (res.rows.length === 1) {
+        
+        let command_name = separated[2];
+        // Upload to db
+        deleteCommandFromChannel(command_name, channel, pg_client);
+
+        if (!isAlias) {
+          client.say(channel, "Command " + command_name + " was deleted");
+        } else {
+          client.say(channel, "Alias " + command_name + " was deleted");
+        }
+      } else {
+        if (!isAlias) {
+          client.say(channel, "Command " + command_name + " does not exist");
+        } else {
+          client.say(channel, "Alias " + command_name + " does not exist");
+        }
+      }
+    }
+  })
+  .catch(e => {
+    console.log("Could not fetch command/alias.");
+    console.error(e.stack);
+    client.say(channel, "Error. Please contact the bot maintainer");
+  });
 }
 
-function update_alias_db() {
-  fs.writeFileSync(global.ALIAS_DB_PATH, JSON.stringify(alias_dict));
-}
-
-function update_permission_db() {
-  fs.writeFileSync(global.PERMISSION_DB_PATH, JSON.stringify(permission_dict));
-}
-
-function command_handler(separated, redis_client) {
+function command_handler(client, separated, pg_client, channel, isAlias) {
   separated[1] = separated[1].toLowerCase();
   separated[2] = separated[2].toLowerCase();
 
-  if (separated[1] === "add" && separated.length >= 4) {
-    if (separated[2] in command_dict) {
-      // The command exists
-      return [
-        ret_codes.RetCodes.ERROR,
-        "Command " + separated[2] + " already exists.",
-      ];
-    }
+  if (separated[1] === "add" ||
+      separated[1] === "edit" ||
+      separated[1] === "delete") {
 
-    if (separated[2] in alias_dict) {
-      // The command exists as an alias
-      return [
-        ret_codes.RetCodes.ERROR,
-        "Command " + separated[2] + " already exists as an alias.",
-      ];
-    }
-
-    separated.shift(); //removes '!command'
-    separated.shift(); //removes 'add'
-    let command_name = separated[0];
-    separated.shift(); //removes the command name
-    command_dict[command_name] = separated.join(" ");
-
-    // Upload to redis
-    redis_client.set(command_name, separated.join(" "));
-
-    // update_commmand_db();
-    ret = [
-      ret_codes.RetCodes.CREATED,
-      "Command " + command_name + " was added.",
-    ];
-  } else if (separated[1] === "edit" && separated.length >= 4) {
-    if (separated[2] in command_dict) {
-      separated.shift();
-      separated.shift(); //removes 'add'
-      let command_name = separated[0];
-      separated.shift(); //removes the command name
-      command_dict[command_name] = separated.join(" ");
-      update_commmand_db();
-      ret = [
-        ret_codes.RetCodes.MODIFIED,
-        "Command " + command_name + " was edited.",
-      ];
-    } else {
-      ret = [
-        ret_codes.RetCodes.ERROR,
-        "Command " + separated[2] + " does not exist.",
-      ];
-    }
-  } else if (separated[1] === "delete" && separated.length >= 3) {
-    let command_name = separated[2];
-    if (command_name in command_dict) {
-      delete command_dict[command_name];
-      update_commmand_db();
-      ret = [
-        ret_codes.RetCodes.DELETED,
-        "Command " + command_name + " was deleted.",
-      ];
-    } else {
-      ret = [
-        ret_codes.RetCodes.ERROR,
-        "Command " + command_name + " does not exist.",
-      ];
-    }
+    async_handler(client, separated, pg_client, channel, isAlias);
+    ret = [ret_codes.RetCodes.OK, ""];
   } else {
-    ret = [
-      ret_codes.RetCodes.ERROR,
-      "Correct syntax: !command <operation> <name> [command]",
-    ];
-  }
-  return ret;
-}
-
-function alias_handler(separated) {
-  separated[1] = separated[1].toLowerCase();
-  separated[2] = separated[2].toLowerCase();
-
-  if (separated[1] === "add" && separated.length >= 4) {
-    if (separated[2] in alias_dict) {
-      // The alias exists
-      return [
-        ret_codes.RetCodes.ERROR,
-        "Alias " + separated[2] + " already exists.",
-      ];
-    }
-
-    if (separated[2] in alias_dict) {
-      // The alias exists as an alias
-      return [
-        ret_codes.RetCodes.ERROR,
-        "Alias " + separated[2] + " already exists as a command.",
-      ];
-    }
-
-    separated.shift(); //removes '!alias'
-    separated.shift(); //removes 'add'
-    let alias_name = separated[0];
-    separated.shift(); //removes the alias name
-    alias_dict[alias_name] = separated.join(" ");
-    update_alias_db();
-    ret = [ret_codes.RetCodes.CREATED, "Alias " + alias_name + " was added."];
-  } else if (separated[1] === "edit" && separated.length >= 4) {
-    if (separated[2] in alias_dict) {
-      separated.shift();
-      separated.shift(); //removes 'add'
-      let alias_name = separated[0];
-      separated.shift(); //removes the alias name
-      alias_dict[alias_name] = separated.join(" ");
-      update_alias_db();
+    if (!isAlias) {
       ret = [
-        ret_codes.RetCodes.MODIFIED,
-        "Alias " + alias_name + " was edited.",
+        ret_codes.RetCodes.ERROR,
+        "Correct syntax: !command <operation> <name> [command]",
       ];
     } else {
       ret = [
         ret_codes.RetCodes.ERROR,
-        "Alias " + separated[2] + " does not exist.",
+        "Correct syntax: !alias <operation> <name> [command]",
       ];
     }
-  } else if (separated[1] === "delete" && separated.length >= 3) {
-    let alias_name = separated[2];
-    if (alias_name in alias_dict) {
-      delete alias_dict[alias_name];
-      update_alias_db();
-      ret = [
-        ret_codes.RetCodes.DELETED,
-        "Alias " + alias_name + " was deleted.",
-      ];
-    } else {
-      ret = [
-        ret_codes.RetCodes.ERROR,
-        "Alias " + alias_name + " does not exist.",
-      ];
-    }
-  } else {
-    ret = [
-      ret_codes.RetCodes.ERROR,
-      "Correct syntax: !alias <operation> <name> [command]",
-    ];
   }
+
   return ret;
 }
 
@@ -269,15 +293,45 @@ function checkPermission(userstate, command) {
   }
 }
 
+async function async_output_handler(client, channel, pg_client, command, userstate) {
+  const query = {
+    text: 'SELECT * FROM command WHERE channel = $1 AND name = $2',
+    values: [channel, command],
+  };
+
+  await pg_client
+  .query(query)
+  .then(res => {
+    console.log(res.rows.length);
+    if (res.rows.length === 1) {
+      output_obj = res.rows[0];
+      console.log(output_obj['isalias']);
+
+      if (!output_obj['isalias']) {
+        client.say(channel, output_obj['output']);
+      } else {
+        command_parser(output_obj['output'], userstate, client, channel, pg_client, true);
+      }
+    }
+  })
+  .catch(e => {
+    console.log("Could not fetch command/alias.");
+    console.error(e.stack);
+    client.say(channel, "Error. Please contact the bot maintainer");
+  });
+}
+
 function command_parser(
   command,
   userstate /*Can be undefined*/,
   client,
   target,
-  redis_client
+  pg_client,
+  isAsyncCall = false
 ) {
   var reply;
-  var separated = command.split(" ");
+  var separated = command.trim().split(" ");
+  console.log(separated)
   separated[0] = separated[0].toLowerCase();
 
   switch (separated[0]) {
@@ -288,7 +342,7 @@ function command_parser(
           (userstate.badges && "broadcaster" in userstate.badges)) &&
         !(separated[2] in complex_cmds)
       )
-        reply = command_handler(separated, redis_client);
+        reply = command_handler(client, separated, pg_client, target, false);
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
@@ -299,24 +353,24 @@ function command_parser(
           (userstate.badges && "broadcaster" in userstate.badges)) &&
         !(separated[2] in complex_cmds)
       )
-        reply = alias_handler(separated);
+        reply = command_handler(client, separated, pg_client, target, true);
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
-    case "!permission":
-      if (
-        userstate &&
-        (userstate.mod ||
-          (userstate.badges && "broadcaster" in userstate.badges)) &&
-        !(separated[2] in complex_cmds)
-      )
-        reply = permission_handler(separated);
-      else reply = [ret_codes.RetCodes.ERROR, ""];
-      break;
+    // case "!permission":
+    //   if (
+    //     userstate &&
+    //     (userstate.mod ||
+    //       (userstate.badges && "broadcaster" in userstate.badges)) &&
+    //     !(separated[2] in complex_cmds)
+    //   )
+    //     reply = permission_handler(separated);
+    //   else reply = [ret_codes.RetCodes.ERROR, ""];
+    //   break;
 
-    case "!data":
-      reply = data.handler();
-      break;
+    // case "!data":
+    //   reply = data.handler();
+    //   break;
 
     case "!choose":
       reply = choose.handler(separated);
@@ -338,13 +392,13 @@ function command_parser(
       }
       break;
 
-    case "!src":
-      if (!cooldown.is_on_cooldown(userstate.username, "!src")) {
-        reply = src.handler(separated, client, target);
-      } else {
-        reply = [ret_codes.RetCodes.ERROR, ""];
-      }
-      break;
+    // case "!src":
+    //   if (!cooldown.is_on_cooldown(userstate.username, "!src")) {
+    //     reply = src.handler(separated, client, target);
+    //   } else {
+    //     reply = [ret_codes.RetCodes.ERROR, ""];
+    //   }
+    //   break;
 
     case "!torrent":
       reply = torrent.handler(separated);
@@ -355,6 +409,7 @@ function command_parser(
       break;
 
     case "!roll":
+      console.log("I got here");
       reply = roll.handler(separated);
       break;
 
@@ -362,13 +417,13 @@ function command_parser(
       reply = expr.handler(separated);
       break;
 
-    case "!slots":
-      if (!cooldown.is_on_cooldown(userstate.username, "!slots")) {
-        reply = slots.handler(client, target, userstate.username);
-      } else {
-        reply = [ret_codes.RetCodes.ERROR, ""];
-      }
-      break;
+    // case "!slots":
+    //   if (!cooldown.is_on_cooldown(userstate.username, "!slots")) {
+    //     reply = slots.handler(client, target, userstate.username);
+    //   } else {
+    //     reply = [ret_codes.RetCodes.ERROR, ""];
+    //   }
+    //   break;
 
     case "!weather":
       if (
@@ -382,60 +437,61 @@ function command_parser(
       else reply = [ret_codes.RetCodes.ERROR, ""];
       break;
 
-    case "!quote":
-      if (!cooldown.is_on_cooldown(userstate.username, "!quote"))
-        reply = quote.handler(separated, userstate);
-      else reply = [ret_codes.RetCodes.ERROR, ""];
-      break;
+    // case "!quote":
+    //   if (!cooldown.is_on_cooldown(userstate.username, "!quote"))
+    //     reply = quote.handler(separated, userstate);
+    //   else reply = [ret_codes.RetCodes.ERROR, ""];
+    //   break;
 
-    case "!cooldown":
-      if (
-        userstate &&
-        (userstate.mod ||
-          (userstate.badges && "broadcaster" in userstate.badges)) &&
-        (complex_cmds.includes(separated[2]) ||
-          separated[2] in command_dict ||
-          separated[2] in alias_dict)
-      ) {
-        reply = cooldown.handler(separated);
-      } else {
-        reply = [
-          ret_codes.ERROR,
-          "You cannot add a cooldown to " + separated[2] + ".",
-        ];
-      }
-      break;
+    // case "!cooldown":
+    //   if (
+    //     userstate &&
+    //     (userstate.mod ||
+    //       (userstate.badges && "broadcaster" in userstate.badges)) &&
+    //     (complex_cmds.includes(separated[2]) ||
+    //       separated[2] in command_dict ||
+    //       separated[2] in alias_dict)
+    //   ) {
+    //     reply = cooldown.handler(separated);
+    //   } else {
+    //     reply = [
+    //       ret_codes.ERROR,
+    //       "You cannot add a cooldown to " + separated[2] + ".",
+    //     ];
+    //   }
+    //   break;
 
     default:
-      redis_client.exists(separated, (error, value) => {
-        if (value) {
-         console.log('Key does exist')
-        } else {
-         console.log('Key does not exist')
-        }
-       })
-      if (separated[0] in command_dict) {
-        if (userstate && checkPermission(userstate, separated[0])) {
-          reply = [ret_codes.RetCodes.OK, command_dict[separated[0]]];
-        }
-      } else if (separated[0] in alias_dict) {
-        if (userstate && checkPermission(userstate, separated[0])) {
-          reply = command_parser(
-            alias_dict[separated[0]],
-            userstate,
-            client,
-            target
-          );
-        }
-      } else reply = [ret_codes.RetCodes.NOT_FOUND, ""];
+      if (separated[0].startsWith("!")) {
+        async_output_handler(client, target, pg_client, separated[0], userstate);
+      }
+      reply = [ret_codes.RetCodes.OK, ""];
+      // if (separated[0] in command_dict) {
+      //   if (userstate && checkPermission(userstate, separated[0])) {
+      //     reply = [ret_codes.RetCodes.OK, command_dict[separated[0]]];
+      //   }
+      // } else if (separated[0] in alias_dict) {
+      //   if (userstate && checkPermission(userstate, separated[0])) {
+      //     reply = command_parser(
+      //       alias_dict[separated[0]],
+      //       userstate,
+      //       client,
+      //       target
+      //     );
+      //   }
+      // } else reply = [ret_codes.RetCodes.NOT_FOUND, ""];
       break;
+  }
+
+  // The aliases need to be said even when there isn't a thread to pick up the return
+  if (isAsyncCall) {
+    if (reply[0] !== ret_codes.RetCodes.NOT_FOUND && reply[1] !== "") {
+      client.say(target, reply[1]);
+    }
   }
   return reply;
 }
 
 module.exports = {
   command_parser,
-  load_command_db,
-  load_alias_db,
-  load_permission_db,
 };
