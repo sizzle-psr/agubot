@@ -1,11 +1,6 @@
-const { RetCodes } = require("../utils/retcodes");
-
-function handler() {
+function handler(twitch_client, channel_name) {
   let num = Math.floor(Math.random() * global.move_db.length);
-  return [
-    RetCodes.OK,
-    "Enemy Clefairy used " + global.move_db[num].ename + "!",
-  ];
+  twitch_client.say(channel_name, "Enemy Clefairy used " + global.move_db[num].ename + "!");
 }
 
 module.exports = { handler };

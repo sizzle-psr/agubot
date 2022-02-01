@@ -1,22 +1,20 @@
 const tmi = require("tmi.js");
 const dotenv = require("dotenv").config();
-const commands = require("./src/commands");
+const commands = require("./src/commands-old");
 const quotes = require("./src/complex-cmds/quote");
 const ret_codes = require("./src/utils/retcodes");
 const data = require("./src/utils/data");
 const data_command = require("./src/complex-cmds/data");
 const cooldowns = require("./src/complex-cmds/cooldowns");
 const { Client } = require('pg');
-
+const { command_parser } = require('./src/commands');
 // Define configuration options
 const opts = {
   identity: {
     username: process.env.BOT_USERNAME,
     password: process.env.OAUTH_TOKEN,
   },
-  channels: [
-    'sizzleskeleton'
-  ],
+  channels: process.env.CHANNEL_LIST.split(', '),
   joinInterval: 3000,
 };
 
@@ -46,7 +44,9 @@ global.TOPCHATTERS_DB = "./data/topchatters.json";
 data.load_pokemon_db(global.POKEMON_DB_PATH);
 data.load_move_db(global.MOVE_DB_PATH);
 // quotes.load_quote_db(global.QUOTE_DB_PATH);
-// cooldowns.load_cds(global.CDS_DICT_DB_PATH, global.CDS_INDEX_DB_PATH);
+
+// Cooldowns can be handled without going to the database
+cooldowns.load_cds(global.CDS_DICT_DB_PATH, global.CDS_INDEX_DB_PATH);
 
 // Create a client with our options
 const client = new tmi.client(opts);
@@ -91,10 +91,15 @@ async function onMessageHandler(channel, userstate, msg, self) {
     // Remove whitespace from chat message
     const commandName = msg.trim();
 
-    const ret = await commands.command_parser(commandName, userstate, client, channel, pg_client);
-    if (ret[0] !== ret_codes.RetCodes.NOT_FOUND && ret[1] !== "") {
-      client.say(channel, ret[1]);
+    // Don't want to overload the database by querying every message
+    if (!commandName.startsWith("!") || userstate === undefined) {
+      return;
     }
+    
+    command_parser(commandName, userstate, client, channel, pg_client);
+    // if (ret[0] !== ret_codes.RetCodes.NOT_FOUND && ret[1] !== "") {
+    //   client.say(channel, ret[1]);
+    // }
   } catch (error) {
     console.log('"' + msg + '" failed its execution due to ' + error.message);
   }

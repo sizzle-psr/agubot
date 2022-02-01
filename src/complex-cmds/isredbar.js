@@ -1,10 +1,14 @@
-const { RetCodes } = require("../utils/retcodes");
+function handler(separated_command, twitch_client, channel_name) {
+  if (separated_command.length != 2) {
+    twitch_client.say(channel_name, "Correct syntax: !isredbar <fraction>");
+    return;
+  }
 
-function handler(separated, client, target) {
-  let fraction = separated[1].split("/");
+  let fraction = separated_command[1].split("/");
 
   if (fraction.length !== 2) {
-    return [RetCodes.ERROR, "Correct syntax: !isredbar <fraction>"];
+    twitch_client.say(channel_name, "Correct syntax: !isredbar <fraction>");
+    return;
   }
 
   let current_hp = Number(fraction[0]);
@@ -17,17 +21,18 @@ function handler(separated, client, target) {
     ratio > 1 ||
     ratio <= 0
   ) {
-    return [RetCodes.ERROR, "AngryVoHiYo"];
+    twitch_client.say(channel_name, "AngryVoHiYo");
+    return;
   }
 
   if (ratio <= 0.2) {
-    client.say(target, "VoHiYo");
-    return [RetCodes.OK, ""];
+    twitch_client.say(channel_name, "VoHiYo");
+    return;
   }
 
-  client.say(target, "VoHiYo");
-  client.say(target, "VoHiYo");
-  return [RetCodes.OK, ""];
+  twitch_client.say(channel_name, "VoHiYo");
+  twitch_client.say(channel_name, "VoHiYo");
+  return;
 }
 
 module.exports = { handler };

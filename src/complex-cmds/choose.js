@@ -1,25 +1,15 @@
-const ret_codes = require("./../utils/retcodes");
-
-function handler(separated) {
-  separated.shift(); // Removes "!choose"
-  let str = separated.join(" "); // Joins the string back together
-  let options = str.split("|"); // Separates into options
+function handler(separated_command, twitch_client, channel) {
+  separated_command.shift(); // Removes "!choose"
+  let str = separated_command.join(' '); // Joins the string back together
+  let options = str.split('|'); // Separates into options
   if (options.length > 1) {
-    return [
-      ret_codes.RetCodes.OK,
-      options[Math.floor(Math.random() * options.length)],
-    ];
+    twitch_client.say(channel, options[Math.floor(Math.random() * options.length)]);
   } else {
-    if (options[0] !== "") {
-      return [
-        ret_codes.RetCodes.ERROR,
-        "If you need to choose from 1 option you really don't need me.",
-      ];
+    if (options[0] !== '') {
+      twitch_client.say(channel, "If you need to choose from 1 option you really don't need me.");
+    } else {
+      twitch_client.say(channel, 'Please provide at least 2 options separated_command by "|".');
     }
-    return [
-      ret_codes.RetCodes.ERROR,
-      'Please provide at least 2 options separated by "|".',
-    ];
   }
 }
 

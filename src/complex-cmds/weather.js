@@ -1,9 +1,8 @@
-const ret_codes = require("../utils/retcodes");
 const fetch = require("node-fetch");
 
-function handler(separated, client, target) {
-  separated.shift();
-  city = separated.join(" ");
+function handler(separated_command, twitch_client, channel_name) {
+  separated_command.shift();
+  city = separated_command.join(" ");
 
   const request = async () => {
     var res = await fetch(
@@ -15,14 +14,14 @@ function handler(separated, client, target) {
     var res_json = await res.json();
 
     if (res_json.count < 1) {
-      client.say(target, "Could not find " + city + " in the world atlas.");
+      twitch_client.say(channel_name, "Could not find " + city + " in the world atlas.");
       return;
     } else {
       let data = res_json.data[0];
       let temp = data.temp;
       let farenheit = (Number(temp) * 9) / 5 + 32;
-      client.say(
-        target,
+      twitch_client.say(
+        channel_name,
         city +
           " has a current forecast of " +
           data.weather.description +
@@ -38,7 +37,7 @@ function handler(separated, client, target) {
 
   request();
 
-  return [ret_codes.RetCodes.OK, ""];
+  return;
 }
 
 module.exports = { handler };

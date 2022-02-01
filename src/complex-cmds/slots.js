@@ -25,11 +25,31 @@ function handler(client, target, user) {
       global.lastFetch == -1 ||
       (Date.now() - global.lastFetch) / 3600000 >= 0.5
     ) {
+      var res_auth = await fetch(
+        "https://id.twitch.tv/oauth2/token?client_id=" +
+          process.env.CLIENT_ID +
+          "&client_secret=" +
+          process.env.CLIENT_SECRET +
+          "&grant_type=client_credentials",
+        {
+          method: "POST",
+        }
+      );
+      var res_auth_json = await res_auth.json();
       global.lastFetch = Date.now();
       // Get twitch emotes
-      var res = await fetch("https://api.twitchemotes.com/api/v4/channels/0");
+      var res = await fetch(
+        "https://api.twitch.tv/helix/chat/emotes/global",
+        {
+          headers: {
+            Authorization: "Bearer " + res_auth_json.access_token,
+            "Client-Id": process.env.CLIENT_ID,
+          }  
+        }
+      );
       var res_json = await res.json();
 
+      console.log(res_json)
       if (res_json.status) {
         client.say(target, "Could not find twitch emotes");
         return;
@@ -38,7 +58,7 @@ function handler(client, target, user) {
       global.twitchemotes = res_json.emotes;
 
       for (entry in res_json.emotes) {
-        if (entry < 14) continue;
+        // if (entry < 14) continue;
         emotes.push(res_json.emotes[entry].code);
       }
     } else {
@@ -54,6 +74,7 @@ function handler(client, target, user) {
     var res2 = await fetch("https://api.betterttv.net/2/emotes");
     var res_json2 = await res2.json();
 
+    console.log(res_json2.status)
     if (res_json2.status) {
       client.say(target, "Could not find bettertv emotes");
       return;
@@ -86,6 +107,7 @@ function handler(client, target, user) {
         emotes.push(res_json3.sets[entry].emotiocons[i].name);
       }
     }
+    console.log(emotes.length)
 
     if (emotes.length < 64) {
       client.say(target, "Could not find enough emotes to run slots!");

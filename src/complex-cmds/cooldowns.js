@@ -2,7 +2,6 @@ const ret_codes = require("../utils/retcodes");
 const fs = require("fs");
 
 var cooldown_dict = {};
-var cooldown_index = {};
 
 function load_cds(path_dict, path_index) {
   if (!fs.existsSync(path_dict)) cooldown_dict = JSON.parse("{}");
@@ -10,20 +9,10 @@ function load_cds(path_dict, path_index) {
     let rawdata = fs.readFileSync(path_dict);
     cooldown_dict = JSON.parse(rawdata);
   }
-
-  if (!fs.existsSync(path_index)) cooldown_index = JSON.parse("{}");
-  else {
-    let rawdata = fs.readFileSync(path_index);
-    cooldown_index = JSON.parse(rawdata);
-  }
 }
 
 function update_dict_db() {
   fs.writeFileSync(global.CDS_DICT_DB_PATH, JSON.stringify(cooldown_dict));
-}
-
-function update_index_db() {
-  fs.writeFileSync(global.CDS_INDEX_DB_PATH, JSON.stringify(cooldown_index));
 }
 
 function is_on_cooldown(username, command) {

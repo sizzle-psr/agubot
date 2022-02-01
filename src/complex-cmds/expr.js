@@ -1,5 +1,4 @@
 const { create, all } = require("mathjs");
-const { RetCodes } = require("../utils/retcodes");
 
 const math = create(all);
 const limitedEvaluate = math.evaluate;
@@ -31,26 +30,31 @@ math.import(
 // console.log(limitedEvaluate('sqrt(16)'))     // Ok, 4
 // console.log(limitedEvaluate('parse("2+3")')) // Error: Function parse is disabled
 
-function handler(separated) {
-  if (separated.length < 2) {
-    return [RetCodes.ERROR, "Correct syntax: !expr <expr>"];
+function handler(separated_command, twitch_client, channel_name) {
+  if (separated_command.length < 2) {
+    twitch_client.say(channel_name, "Correct syntax: !expr <expr>");
+    return;
   }
-  separated.shift();
-  let expression = separated.join(" ");
+  separated_command.shift();
+  let expression = separated_command.join(" ");
   var expression_filtered = expression
     .match(/[0-9.+\-()^/\*a-zA-Z%!&|<>\ ]*/g, "")
     .join("");
   if (expression != expression_filtered) {
-    return [
-      RetCodes.ERROR,
-      "That is not a valid expression. Please check any typos and try again.",
-    ];
+    twitch_client.say(
+      channel_name,
+      "That is not a valid expression. Please check any typos and try again."
+    );
+    return;
   }
   try {
     var ret = limitedEvaluate(expression);
-    return [RetCodes.OK, String(ret)];
+    twitch_client.say(channel_name, String(ret))
+    return ;
   } catch (error) {
-    return [RetCodes.ERROR, "Error when evaluating the expression."];
+    console.log(error)
+    twitch_client.say(channel_name, "Error when evaluating the expression.");
+    return;
   }
 }
 

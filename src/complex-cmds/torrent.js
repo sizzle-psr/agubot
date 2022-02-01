@@ -1,12 +1,13 @@
-const { RetCodes } = require("../utils/retcodes");
+function handler(separated_command, twitch_client, channel_name) {
+  if (separated_command.length != 2) {
+    twitch_client.say(channel_name, "Correct syntax: !torrent maxhp");
+    return;
+  }
 
-function handler(separated) {
-  let maxhp = Number(separated[1]);
+  let maxhp = Number(separated_command[1]);
   if (!Number.isInteger(maxhp) || maxhp < 0 || Math.floor(maxhp) !== maxhp) {
-    return [
-      RetCodes.ERROR,
-      "Please provide a positive integer for the max hp.",
-    ];
+    twitch_client.say(channel_name, "Please provide a positive integer for the max hp.");
+    return;
   } else if (maxhp < 3) {
     let alternatives = [
       "You must assume I'm a dumb bot.",
@@ -14,26 +15,26 @@ function handler(separated) {
       "This is how skynet began.",
       "Can't tell, must be a glitch in the matrix.",
       "I'm going to go on a limb and say that you'd be dead.",
-      "What water starter has this max hp ever, please tell me.",
+      "What water starter has this max hp ever. Please tell me.",
       "I'm pretty sure shedinja does not have torrent as an ability.",
-      "Just play a fire starter, your IQ is clearly not above sea level.",
+      "Just play a fire starter, I'm sure blaze will provide no problems for you.",
     ];
-    return [
-      RetCodes.ERROR,
-      alternatives[Math.floor(Math.random() * alternatives.length)],
-    ];
+    twitch_client.say(channel_name, alternatives[Math.floor(Math.random() * alternatives.length)]);
+    return;
   } else if (maxhp > 714) {
-    return [
-      RetCodes.ERROR,
-      "The maximum possible hp for a pokemon is 714 for a Blissey. And even they don't have torrent.",
-    ];
+    twitch_client.say(
+      channel_name,
+      "The maximum possible hp for a pokemon is 714 for a Blissey. And even they don't have torrent as their ability."
+    );
+    return;
   } else {
     var message = (message = Math.floor(maxhp / 3) + " or less HP.");
     if (maxhp == 69) {
       // For the memes
       message = message + " Btw, nice.";
     }
-    return [RetCodes.OK, message];
+    twitch_client.say(channel_name, message);
+    return;
   }
 }
 
