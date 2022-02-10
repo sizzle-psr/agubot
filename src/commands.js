@@ -1,6 +1,7 @@
 const { is_on_cooldown } = require("./complex-cmds/cooldowns");
 const {default_commands, default_permission_of_commands } = require("./utils/defaults");
 const { command_handler } = require("./handlers/command");
+const { setgame_handler } = require('./handlers/setgame');
 const { permission_handler } = require("./handlers/permission");
 
 const choose = require('./complex-cmds/choose');
@@ -14,6 +15,7 @@ const slots = require('./complex-cmds/slots');
 const src = require('./complex-cmds/src');
 const torrent = require('./complex-cmds/torrent');
 const weather = require('./complex-cmds/weather');
+const wr = require('./complex-cmds/wr');
 
 function user_has_permission(permission_level, userstate) {
   if (
@@ -83,6 +85,9 @@ function default_command_handler(
     case '!randmon':
       randmon.handler(separated_command, twitch_client, channel_name);
       break;
+    case '!setgame':
+      setgame_handler(separated_command, channel_name, twitch_client, pg_client);
+      break;
     // case '!slots': // TODO slots isn't working, twitch changed API
     //   slots.handler(twitch_client, channel_name, userstate.username);
     //   break;
@@ -97,6 +102,10 @@ function default_command_handler(
       break;
     case '!weather':
       weather.handler(separated_command, twitch_client, channel_name);
+      break;
+    case '!wr':
+      wr.handler(channel_name, twitch_client, pg_client);
+      break;
   }
 }
 

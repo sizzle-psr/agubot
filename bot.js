@@ -92,7 +92,7 @@ async function onMessageHandler(channel, userstate, msg, self) {
     const commandName = msg.trim();
 
     // Don't want to overload the database by querying every message
-    if (!commandName.startsWith("!") || userstate === undefined) {
+    if (!commandName.startsWith("!") || userstate == undefined) {
       return;
     }
     

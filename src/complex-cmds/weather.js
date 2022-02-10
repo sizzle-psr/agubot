@@ -13,7 +13,7 @@ function handler(separated_command, twitch_client, channel_name) {
     );
     var res_json = await res.json();
 
-    if (res_json.count < 1) {
+    if (res_json.count < 1 || res.status != 200) {
       twitch_client.say(channel_name, "Could not find " + city + " in the world atlas.");
       return;
     } else {

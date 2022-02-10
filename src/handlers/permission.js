@@ -12,13 +12,13 @@ async function async_permission_handler(separated_command, twitch_client, channe
     .then((res) => {
       var permission;
       if (separated_command[1] === 'vip') {
-        permission = 1
+        permission = 1;
       } else if (separated_command[1] === 'mod') {
-        permission = 2
+        permission = 2;
       } else if (separated_command[1] === 'broadcaster') {
-        permission = 3
+        permission = 3;
       } else {
-        permission = 0
+        permission = 0;
       }
 
       // Successful fetch
@@ -29,7 +29,10 @@ async function async_permission_handler(separated_command, twitch_client, channe
         // There is no command with this name in the database
         if (default_commands.indexOf(separated_command[2]) != -1) {
           if (non_permission_downgrade.indexOf(separated_command[2]) != -1 && permission < 2) {
-            twitch_client.say(channel, 'You can\'t downgrade permissions below mod for ' + separated_command[2]);
+            twitch_client.say(
+              channel,
+              "You can't downgrade permissions below mod for " + separated_command[2]
+            );
           } else {
             insertDefaultCommandWithPermission(separated_command[2], permission, channel, pg_client);
             twitch_client.say(channel, 'Permissions updated for ' + separated_command[2]);

@@ -13,13 +13,13 @@ const default_commands = [
   // '!quote', (needs evaluation of db)
   '!randmon',
   '!roll',
-  // '!setgame', -> TODO
+  '!setgame',
   // '!setrunner', -> TODO
   // '!slots', -> TODO
   // '!src', -> TODO
   '!torrent',
   '!weather',
-  // '!wr', -> TODO
+  '!wr'
 ];
 
 const default_permission_of_commands = {
@@ -37,13 +37,13 @@ const default_permission_of_commands = {
   // '!quote': 0,
   '!randmon': 0,
   '!roll': 0,
-  // '!setgame': 2,
+  '!setgame': 2,
   // '!setrunner': 2,
   // '!slots': 0,
   // '!src': 0,
   '!torrent': 0,
   '!weather': 2,
-  // '!wr': 0,
+  '!wr': 0,
 }
 
 const default_cooldown_of_commands = {
@@ -61,13 +61,13 @@ const default_cooldown_of_commands = {
   // '!quote': 0,
   '!randmon': 0,
   '!roll': 0,
-  // '!setgame': 0,
+  '!setgame': 0,
   // '!setrunner': 0,
   // '!slots': 600,
   // '!src': 10,
   '!torrent': 0,
   '!weather': 10,
-  // '!wr': 0,
+  '!wr': 0,
 }
 
 const non_permission_downgrade = [
@@ -75,7 +75,8 @@ const non_permission_downgrade = [
   '!alias',
   '!permission',
   '!cooldown',
-  '!weather'
+  '!weather',
+  '!setgame'
 ];
 
 const non_aliasable = [
