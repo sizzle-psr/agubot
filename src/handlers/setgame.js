@@ -25,7 +25,7 @@ async function async_setgame_handler(game, category, channel, twitch_client, pg_
   var cat_id = '';
   for (i = 0; i < cat_res_json.data.length; i++) {
     data = cat_res_json.data[i];
-    if (data.name === category) {
+    if (data.name.toLowerCase() === category.toLowerCase()) {
       cat_id = data.id;
       break;
     }
