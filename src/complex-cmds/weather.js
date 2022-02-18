@@ -3,10 +3,17 @@ const fetch = require('node-fetch');
 function handler(separated_command, twitch_client, channel_name) {
   separated_command.shift();
   city = separated_command.join(' ');
+  weather_url = 'https://api.weatherbit.io/v2.0/current?key='+ process.env.WEATHER_API_KEY
+  if (city.indexOf(',') != -1) {
+    city = city.split(',');
+    weather_url = weather_url + '&city=' + city[0].trim() + '&country='+city[1].trim();
+  } else {
+    weather_url = weather_url + '&city=' + city.trim()
+  }
 
   const request = async () => {
     var res = await fetch(
-      'https://api.weatherbit.io/v2.0/current?city=' + city + '&key=' + process.env.WEATHER_API_KEY
+      weather_url
     );
     var res_json = await res.json();
 
@@ -24,7 +31,9 @@ function handler(separated_command, twitch_client, channel_name) {
       let temp = data.temp;
       let app_temp = data.app_temp;
       let farenheit = (Number(temp) * 9) / 5 + 32;
+      farenheit = farenheit.toFixed(1);
       let app_farenheit = (Number(app_temp) * 9) / 5 + 32;
+      app_farenheit = app_farenheit.toFixed(1);
       twitch_client.say(
         channel_name,
         city +

@@ -18,6 +18,11 @@ const weather = require('./complex-cmds/weather');
 const wr = require('./complex-cmds/wr');
 
 function user_has_permission(permission_level, userstate) {
+
+  if ((userstate == null || userstate.badges == null) && permission_level != 0) {
+    return false;
+  }
+
   if (
     (permission_level === 0) || // Any user
     (permission_level <= 1 && "vip" in userstate.badges) || // VIPs

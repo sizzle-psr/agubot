@@ -3,6 +3,7 @@ const default_commands = [
   '!alias',
   '!permission',
   // '!cooldown',
+  // '!counter', // -> TODO
   '!choose',
   // '!data', (prob not fixing)
   '!docs',
@@ -84,7 +85,6 @@ const non_aliasable = [
   '!alias',
   '!permission',
   '!cooldown',
-  '!weather',
   '!slots',
   '!expr',
   '!quote',
