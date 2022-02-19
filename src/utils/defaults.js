@@ -16,7 +16,7 @@ const default_commands = [
   '!roll',
   '!setgame',
   // '!setrunner', -> TODO
-  // '!slots', -> TODO
+  '!slots',
   // '!src', -> TODO
   '!torrent',
   '!weather',
@@ -40,7 +40,7 @@ const default_permission_of_commands = {
   '!roll': 0,
   '!setgame': 2,
   // '!setrunner': 2,
-  // '!slots': 0,
+  '!slots': 0,
   // '!src': 0,
   '!torrent': 0,
   '!weather': 2,
@@ -52,23 +52,23 @@ const default_cooldown_of_commands = {
   '!alias': 0,
   '!permission': 0,
   // '!cooldown': 0,
-  '!choose': 0,
+  '!choose': 10,
   // '!data': 0,
   '!docs': 0,
   '!expr': 15, // avoid misusage, can be lowered
   '!isredbar': 0,
-  '!metronome': 0,
+  '!metronome': 10,
   // '!pb': 0,
   // '!quote': 0,
-  '!randmon': 0,
-  '!roll': 0,
+  '!randmon': 10,
+  '!roll': 10,
   '!setgame': 0,
   // '!setrunner': 0,
-  // '!slots': 600,
+  '!slots': 600,
   // '!src': 10,
-  '!torrent': 0,
-  '!weather': 10,
-  '!wr': 0,
+  '!torrent': 10,
+  '!weather': 15,
+  '!wr': 30,
 }
 
 const non_permission_downgrade = [

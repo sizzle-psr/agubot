@@ -1,8 +1,12 @@
-const { is_on_cooldown } = require("./complex-cmds/cooldowns");
-const {default_commands, default_permission_of_commands } = require("./utils/defaults");
-const { command_handler } = require("./handlers/command");
+const { is_on_cooldown } = require('./complex-cmds/cooldowns');
+const {
+  default_commands,
+  default_permission_of_commands,
+  default_cooldown_of_commands,
+} = require('./utils/defaults');
+const { command_handler } = require('./handlers/command');
 const { setgame_handler } = require('./handlers/setgame');
-const { permission_handler } = require("./handlers/permission");
+const { permission_handler } = require('./handlers/permission');
 
 const choose = require('./complex-cmds/choose');
 const data = require('./complex-cmds/data');
@@ -16,18 +20,30 @@ const src = require('./complex-cmds/src');
 const torrent = require('./complex-cmds/torrent');
 const weather = require('./complex-cmds/weather');
 const wr = require('./complex-cmds/wr');
+const { defaults } = require('pg/lib');
+
+// This has format:
+// {
+//   '!command': {
+//     'username': Date Object
+//   },
+//  '!command2': {
+//     'username': Date Object,
+//     'username1': Date Object
+//   }
+// }
+last_usage_of_user_per_command = {};
 
 function user_has_permission(permission_level, userstate) {
-
   if ((userstate == null || userstate.badges == null) && permission_level != 0) {
     return false;
   }
 
   if (
-    (permission_level === 0) || // Any user
-    (permission_level <= 1 && "vip" in userstate.badges) || // VIPs
+    permission_level === 0 || // Any user
+    (permission_level <= 1 && 'vip' in userstate.badges) || // VIPs
     (permission_level <= 2 && userstate.mod) || // Mod
-    ("broadcaster" in userstate.badges) // Streamer
+    'broadcaster' in userstate.badges // Streamer
   ) {
     return true;
   }
@@ -35,23 +51,27 @@ function user_has_permission(permission_level, userstate) {
   return false;
 }
 
-function command_is_on_cooldown_for_user(cooldown_time, username, channel_name) {
+function command_is_on_cooldown_for_user(command_name, cooldown_time, username, channel_name) {
 
-  return false;
-  if (cooldown_time === 0) {
+  if (command_name in last_usage_of_user_per_command) {
+    if (username in last_usage_of_user_per_command[command_name]) {
+      let now = new Date();
+      const last_usage = last_usage_of_user_per_command[command_name][username];
+      const diff_time = Math.ceil(Math.abs(last_usage - now) / 1000);
+      last_usage_of_user_per_command[command_name][username] = new Date();
+      return diff_time < cooldown_time;
+    } else {
+      last_usage_of_user_per_command[command_name][username] = new Date();
+      return false;
+    }
+  } else {
+    last_usage_of_user_per_command[command_name] = {};
+    last_usage_of_user_per_command[command_name][username] = new Date();
     return false;
   }
-
-  return is_on_cooldown(cooldown_time, username, command_name, channel_name);
 }
 
-function default_command_handler(
-  separated_command,
-  channel_name,
-  twitch_client,
-  pg_client,
-  userstate
-) {
+function default_command_handler(separated_command, channel_name, twitch_client, pg_client, userstate) {
   switch (separated_command[0]) {
     case '!command':
       command_handler(separated_command, channel_name, twitch_client, pg_client, false);
@@ -60,7 +80,7 @@ function default_command_handler(
       command_handler(separated_command, channel_name, twitch_client, pg_client, true);
       break;
     case '!permission':
-      let is_broadcaster = 'broadcaster' in userstate.badges
+      let is_broadcaster = 'broadcaster' in userstate.badges;
       permission_handler(separated_command, is_broadcaster, twitch_client, channel_name, pg_client);
       break;
     // case '!cooldown':
@@ -70,11 +90,14 @@ function default_command_handler(
       choose.handler(separated_command, twitch_client, channel_name);
       break;
     case '!docs':
-      twitch_client.say(channel_name, "https://github.com/sizzle-psr/agubot/blob/multiple-channels/README.md");
+      twitch_client.say(
+        channel_name,
+        'https://github.com/sizzle-psr/agubot/blob/multiple-channels/README.md'
+      );
       break;
     // case '!data':
-      // TODO? Don't know if it's feasible to data multiple channels
-      // break;
+    // TODO? Don't know if it's feasible to data multiple channels
+    // break;
     case '!expr':
       expr.handler(separated_command, twitch_client, channel_name);
       break;
@@ -85,17 +108,17 @@ function default_command_handler(
       metronome.handler(twitch_client, channel_name);
       break;
     // case '!quote':
-      // TODO? Need to see how much DB we use normally
-      // break;
+    // TODO? Need to see how much DB we use normally
+    // break;
     case '!randmon':
       randmon.handler(separated_command, twitch_client, channel_name);
       break;
     case '!setgame':
       setgame_handler(separated_command, channel_name, twitch_client, pg_client);
       break;
-    // case '!slots': // TODO slots isn't working, twitch changed API
-    //   slots.handler(twitch_client, channel_name, userstate.username);
-    //   break;
+    case '!slots':
+      slots.handler(twitch_client, channel_name, userstate.username);
+      break;
     case '!roll':
       roll.handler(separated_command, twitch_client, channel_name);
       break;
@@ -114,13 +137,7 @@ function default_command_handler(
   }
 }
 
-async function custom_command_handler(
-  command_obj,
-  channel_name,
-  twitch_client,
-  pg_client,
-  userstate
-) {
+async function custom_command_handler(command_obj, channel_name, twitch_client, pg_client, userstate) {
   if (command_obj['isalias']) {
     command_parser(command_obj['output'], userstate, twitch_client, channel_name, pg_client);
   } else {
@@ -128,16 +145,9 @@ async function custom_command_handler(
   }
 }
 
-async function command_parser(
-  command_string,
-  userstate,
-  twitch_client,
-  channel_name,
-  pg_client
-) {
-
+async function command_parser(command_string, userstate, twitch_client, channel_name, pg_client) {
   // Process the command string
-  separated_command = command_string.split(" ");
+  separated_command = command_string.split(' ');
 
   command_name = separated_command[0].trim();
 
@@ -148,48 +158,71 @@ async function command_parser(
   };
 
   await pg_client
-  .query(query)
-  .then(res => {
-    let username = userstate.username
-    if (res.rows.length === 0) {
-      // There is no command with this name in the database
-      // Maybe it's a default command?
-      if (default_commands.indexOf(command_name) != -1) {
-        // Check if the user has permission to use this command
-        let permission_level = default_permission_of_commands[command_name];
-        if (user_has_permission(permission_level, userstate)) {
-          // Check if command is on cooldown for user
-          if (!command_is_on_cooldown_for_user(command_name, username, channel_name)) {
-            default_command_handler(separated_command, channel_name, twitch_client, pg_client, userstate);
+    .query(query)
+    .then((res) => {
+      let username = userstate.username;
+      if (res.rows.length === 0) {
+        // There is no command with this name in the database
+        // Maybe it's a default command?
+        if (default_commands.indexOf(command_name) != -1) {
+          // Check if the user has permission to use this command
+          let permission_level = default_permission_of_commands[command_name];
+          if (user_has_permission(permission_level, userstate)) {
+            // Check if command is on cooldown for user
+            if (
+              !command_is_on_cooldown_for_user(
+                command_name,
+                default_cooldown_of_commands[command_name],
+                username,
+                channel_name
+              )
+            ) {
+              default_command_handler(
+                separated_command,
+                channel_name,
+                twitch_client,
+                pg_client,
+                userstate
+              );
+            }
           }
         }
-      }
-    } else {
-      // There is a command with this name in the database
-      command_obj = res.rows[0];
+      } else {
+        // There is a command with this name in the database
+        command_obj = res.rows[0];
 
-      // Check if the user has permission to use this command
-      if (user_has_permission(command_obj['permission'], userstate)) {
-        // User has permission
-        // Check if command is on cooldown for user
-        if (!command_is_on_cooldown_for_user(command_obj['cooldown'], username, channel_name)) {
-          // Command is not on cooldown for user
-          if (default_commands.indexOf(command_name) != -1) {
-            default_command_handler(separated_command, channel_name, twitch_client, pg_client, userstate);
-          } else {
-            custom_command_handler(command_obj, channel_name, twitch_client, pg_client, userstate); // TODO
+        // Check if the user has permission to use this command
+        if (user_has_permission(command_obj['permission'], userstate)) {
+          // User has permission
+          let cooldown =
+            command_name in default_cooldown_of_commands != -1
+              ? default_cooldown_of_commands[command_name]
+              : 0; // Change to command_obj['cooldown'] when cooldown editing is implemented
+          // Check if command is on cooldown for user
+          if (!command_is_on_cooldown_for_user(command_name, cooldown, username, channel_name)) {
+            // Command is not on cooldown for user
+            if (default_commands.indexOf(command_name) != -1) {
+              default_command_handler(
+                separated_command,
+                channel_name,
+                twitch_client,
+                pg_client,
+                userstate
+              );
+            } else {
+              custom_command_handler(command_obj, channel_name, twitch_client, pg_client, userstate); // TODO
+            }
           }
         }
       }
-    }
-  })
-  .catch(e => {
-    console.log("Could not fetch command/alias.");
-    console.error(e.stack);
-    twitch_client.say(channel_name, "Error. Please contact the bot maintainer");
-  });
+    })
+    .catch((e) => {
+      console.log('Could not fetch command/alias.');
+      console.error(e.stack);
+      twitch_client.say(channel_name, 'Error. Please contact the bot maintainer');
+    });
 }
 
 module.exports = {
-  command_parser
+  command_parser,
 };

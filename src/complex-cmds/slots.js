@@ -49,33 +49,32 @@ function handler(client, target, user) {
       );
       var res_json = await res.json();
 
-      console.log(res_json)
-      if (res_json.status) {
+      if (res.status != 200) {
         client.say(target, "Could not find twitch emotes");
         return;
       }
 
-      global.twitchemotes = res_json.emotes;
+      global.twitchemotes = res_json.data;
 
-      for (entry in res_json.emotes) {
-        // if (entry < 14) continue;
-        emotes.push(res_json.emotes[entry].code);
+      for (entry in res_json.data) {
+        // console.log(entry)
+        if (entry < 14) continue;
+        emotes.push(res_json.data[entry]['name']);
       }
     } else {
       for (entry in global.twitchemotes) {
         if (entry < 14) continue;
-        emotes.push(global.twitchemotes[entry].code);
+        emotes.push(global.twitchemotes[entry]['name']);
       }
     }
 
     //api.betterttv.net/2/emotes
 
     // Get bettertv general emotes
-    var res2 = await fetch("https://api.betterttv.net/2/emotes");
-    var res_json2 = await res2.json();
+    var res2_ = await fetch("https://api.betterttv.net/2/emotes");
+    var res_json2 = await res2_.json();
 
-    console.log(res_json2.status)
-    if (res_json2.status) {
+    if (res2_.status != 200) {
       client.say(target, "Could not find bettertv emotes");
       return;
     }
@@ -107,7 +106,6 @@ function handler(client, target, user) {
         emotes.push(res_json3.sets[entry].emotiocons[i].name);
       }
     }
-    console.log(emotes.length)
 
     if (emotes.length < 64) {
       client.say(target, "Could not find enough emotes to run slots!");
@@ -133,7 +131,7 @@ function handler(client, target, user) {
   request();
 
   // Done to not send anything to chat while we wait for API
-  return [ret_codes.RetCodes.NOT_FOUND, ""];
+  return;
 }
 
 module.exports = { handler };
