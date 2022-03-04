@@ -1,4 +1,5 @@
 const default_commands = [
+  '!229',
   '!command',
   '!alias',
   '!permission',
@@ -24,6 +25,7 @@ const default_commands = [
 ];
 
 const default_permission_of_commands = {
+  '!229': 0,
   '!command': 2,
   '!alias': 2,
   '!permission': 2,
@@ -48,6 +50,7 @@ const default_permission_of_commands = {
 }
 
 const default_cooldown_of_commands = {
+  '!229': 10,
   '!command': 0,
   '!alias': 0,
   '!permission': 0,

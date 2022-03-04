@@ -8,6 +8,7 @@ const { command_handler } = require('./handlers/command');
 const { setgame_handler } = require('./handlers/setgame');
 const { permission_handler } = require('./handlers/permission');
 
+const _229 = require('./complex-cmds/229');
 const choose = require('./complex-cmds/choose');
 const data = require('./complex-cmds/data');
 const expr = require('./complex-cmds/expr');
@@ -73,6 +74,9 @@ function command_is_on_cooldown_for_user(command_name, cooldown_time, username, 
 
 function default_command_handler(separated_command, channel_name, twitch_client, pg_client, userstate) {
   switch (separated_command[0]) {
+    case '!229':
+      _229.handler(twitch_client, channel_name);
+      break;
     case '!command':
       command_handler(separated_command, channel_name, twitch_client, pg_client, false);
       break;

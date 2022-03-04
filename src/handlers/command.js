@@ -34,9 +34,9 @@ async function async_command_handler(twitch_client, separated_command, pg_client
           }
         } else {
           if (!isAlias) {
-            twitch_client.say(channel, 'Command ' + command_name + ' already exists.');
+            twitch_client.say(channel, 'Command ' + separated_command[2] + ' already exists.');
           } else {
-            twitch_client.say(channel, 'Alias ' + command_name + ' already exists.');
+            twitch_client.say(channel, 'Alias ' + separated_command[2] + ' already exists.');
           }
         }
       } else if (separated_command[1] === 'edit') {
@@ -62,9 +62,9 @@ async function async_command_handler(twitch_client, separated_command, pg_client
           }
         } else {
           if (!isAlias) {
-            twitch_client.say(channel, 'Command ' + command_name + ' does not exist.');
+            twitch_client.say(channel, 'Command ' + separated_command[2] + ' does not exist.');
           } else {
-            twitch_client.say(channel, 'Alias ' + command_name + ' does not exist.');
+            twitch_client.say(channel, 'Alias ' + separated_command[2] + ' does not exist.');
           }
         }
       } else {
@@ -81,9 +81,9 @@ async function async_command_handler(twitch_client, separated_command, pg_client
           }
         } else {
           if (!isAlias) {
-            twitch_client.say(channel, 'Command ' + command_name + ' does not exist.');
+            twitch_client.say(channel, 'Command ' + separated_command[2] + ' does not exist.');
           } else {
-            twitch_client.say(channel, 'Alias ' + command_name + ' does not exist.');
+            twitch_client.say(channel, 'Alias ' + separated_command[2] + ' does not exist.');
           }
         }
       }
