@@ -14,6 +14,7 @@ const data = require('./complex-cmds/data');
 const expr = require('./complex-cmds/expr');
 const isredbar = require('./complex-cmds/isredbar');
 const metronome = require('./complex-cmds/metronome');
+const pinballslots = require('./complex-cmds/pinballslots');
 const randmon = require('./complex-cmds/randmon');
 const roll = require('./complex-cmds/roll');
 const slots = require('./complex-cmds/slots');
@@ -110,6 +111,9 @@ function default_command_handler(separated_command, channel_name, twitch_client,
       break;
     case '!metronome':
       metronome.handler(twitch_client, channel_name);
+      break;
+    case '!pinballslots':
+      pinballslots.handler(twitch_client, channel_name, userstate.username);
       break;
     // case '!quote':
     // TODO? Need to see how much DB we use normally

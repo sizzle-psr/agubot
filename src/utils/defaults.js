@@ -12,6 +12,7 @@ const default_commands = [
   '!isredbar',
   '!metronome',
   // '!pb', -> TODO
+  '!pinballslots',
   // '!quote', (needs evaluation of db)
   '!randmon',
   '!roll',
@@ -36,6 +37,7 @@ const default_permission_of_commands = {
   '!expr': 1, // avoid misusage, can be dowgraded
   '!isredbar': 0,
   '!metronome': 0,
+  '!pinballslots': 3,
   // '!pb': 0,
   // '!quote': 0,
   '!randmon': 0,
@@ -61,6 +63,7 @@ const default_cooldown_of_commands = {
   '!expr': 15, // avoid misusage, can be lowered
   '!isredbar': 0,
   '!metronome': 10,
+  '!pinballslots': 600,
   // '!pb': 0,
   // '!quote': 0,
   '!randmon': 10,

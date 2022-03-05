@@ -55,19 +55,19 @@ function handler(client, target, user) {
 
     for (entry in res_json3.sets) {
       if (res_json3.sets[entry].id === 3) {
-        for (i in res_json3.sets[entry].emotiocons) {
-          emotes.push(res_json3.sets[entry].emotiocons[i].name);
+        for (i in res_json3.sets[entry].emoticons) {
+          emotes.push(res_json3.sets[entry].emoticons[i].name);
         }
       }
     }
 
     // Get FrankerFaceZ channel emotes
-    var res4 = await fetch('https://api.frankerfacez.com/v1/room/' + process.env.CHANNEL_NAME);
+    var res4 = await fetch('https://api.frankerfacez.com/v1/room/' + target.replace('#', ''));
     var res_json4 = await res4.json();
 
     for (entry in res_json4.sets) {
-      for (i in res_json4.sets[entry].emotiocons) {
-        emotes.push(res_json3.sets[entry].emotiocons[i].name);
+      for (i in res_json4.sets[entry].emoticons) {
+        emotes.push(res_json4.sets[entry].emoticons[i].name);
       }
     }
 
