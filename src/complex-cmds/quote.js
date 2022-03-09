@@ -1,6 +1,6 @@
 const fs = require("fs");
 const { sep } = require("path");
-const ret_codes = require("../utils/retcodes");
+// const ret_codes = require("../utils/retcodes");
 
 var quote_list = [];
 

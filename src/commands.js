@@ -1,4 +1,4 @@
-const { is_on_cooldown } = require('./complex-cmds/cooldowns');
+// const { is_on_cooldown } = require('./complex-cmds/cooldowns');
 const {
   default_commands,
   default_permission_of_commands,
@@ -7,10 +7,11 @@ const {
 const { command_handler } = require('./handlers/command');
 const { setgame_handler } = require('./handlers/setgame');
 const { permission_handler } = require('./handlers/permission');
+const { cooldown_handler } = require('./handlers/cooldown');
 
 const _229 = require('./complex-cmds/229');
 const choose = require('./complex-cmds/choose');
-const data = require('./complex-cmds/data');
+// const data = require('./complex-cmds/data');
 const expr = require('./complex-cmds/expr');
 const isredbar = require('./complex-cmds/isredbar');
 const metronome = require('./complex-cmds/metronome');
@@ -18,7 +19,7 @@ const pinballslots = require('./complex-cmds/pinballslots');
 const randmon = require('./complex-cmds/randmon');
 const roll = require('./complex-cmds/roll');
 const slots = require('./complex-cmds/slots');
-const src = require('./complex-cmds/src');
+// const src = require('./complex-cmds/src');
 const torrent = require('./complex-cmds/torrent');
 const weather = require('./complex-cmds/weather');
 const wr = require('./complex-cmds/wr');
@@ -88,9 +89,9 @@ function default_command_handler(separated_command, channel_name, twitch_client,
       let is_broadcaster = 'broadcaster' in userstate.badges;
       permission_handler(separated_command, is_broadcaster, twitch_client, channel_name, pg_client);
       break;
-    // case '!cooldown':
-    //   cooldown_handler();//TODO
-    //   break;
+    case '!cooldown':
+      cooldown_handler(separated_command, twitch_client, channel_name, pg_client);
+      break;
     case '!choose':
       choose.handler(separated_command, twitch_client, channel_name);
       break;
@@ -202,10 +203,13 @@ async function command_parser(command_string, userstate, twitch_client, channel_
         // Check if the user has permission to use this command
         if (user_has_permission(command_obj['permission'], userstate)) {
           // User has permission
-          let cooldown =
-            command_name in default_cooldown_of_commands != -1
-              ? default_cooldown_of_commands[command_name]
-              : 0; // Change to command_obj['cooldown'] when cooldown editing is implemented
+          var cooldown;
+          if (command_obj['cooldown'] != 0) {
+            cooldown = command_obj['cooldown'];
+          } else {
+            cooldown = command_name in default_cooldown_of_commands != -1 ? default_cooldown_of_commands[command_name] : 0;
+          }
+
           // Check if command is on cooldown for user
           if (!command_is_on_cooldown_for_user(command_name, cooldown, username, channel_name)) {
             // Command is not on cooldown for user

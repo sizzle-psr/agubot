@@ -24,7 +24,6 @@ function insertCommandFromChannel(command, output, channel, isAlias, pg_client) 
 
   pg_client
     .query(query)
-    .then((res) => console.log('Inserted: ' + res))
     .catch((e) => console.error('DATABASE ERROR: ' + e.stack));
 }
 
@@ -36,7 +35,6 @@ function updateCommandOutput(command, channel, output, pg_client) {
 
   pg_client
     .query(query)
-    .then((res) => console.log('Updated: ' + res))
     .catch((e) => console.error('DATABASE ERROR: ' + e.stack));
 }
 
@@ -48,7 +46,6 @@ function deleteCommandFromChannel(command, channel, pg_client) {
 
   pg_client
     .query(query)
-    .then((res) => console.log('Deleted: ' + res))
     .catch((e) => console.error('DATABASE ERROR: ' + e.stack));
 }
 
@@ -60,7 +57,6 @@ function insertDefaultCommandWithCooldown(command, cooldown, channel, pg_client)
 
   pg_client
     .query(query)
-    .then((res) => console.log('Inserted: ' + res))
     .catch((e) => console.error('DATABASE ERROR: ' + e.stack));
 }
 
@@ -72,7 +68,6 @@ function updateCommandWithCooldown(command, cooldown, channel, pg_client) {
 
   pg_client
     .query(query)
-    .then((res) => console.log('Updated: ' + res))
     .catch((e) => console.error('DATABASE ERROR: ' + e.stack));
 }
 
@@ -84,7 +79,6 @@ function insertDefaultCommandWithPermission(command, permission, channel, pg_cli
 
   pg_client
     .query(query)
-    .then((res) => console.log('Inserted: ' + res))
     .catch((e) => console.error('DATABASE ERROR: ' + e.stack));
 }
 
@@ -96,7 +90,6 @@ function updateCommandWithPermission(command, permission, channel, pg_client) {
 
   pg_client
     .query(query)
-    .then((res) => console.log('Updated: ' + res))
     .catch((e) => console.error('DATABASE ERROR: ' + e.stack));
 }
 
@@ -116,7 +109,6 @@ function insertGameCategoryFromChannel(pg_client, game_name, game_abbrv, cat_id,
 
       pg_client
         .query(insert_query)
-        .then((result) => console.log('Updated: ' + result))
         .catch((e) => console.error('DATABASE ERROR: ' + e.stack));
     })
     .catch((e) => console.error('DATABASE ERROR: ' + e.stack));
@@ -138,7 +130,6 @@ function insertGameCategoryFromChannelWithVar(pg_client, game_name, game_abbrv, 
 
       pg_client
         .query(insert_query)
-        .then((result) => console.log('Updated: ' + result))
         .catch((e) => console.error('DATABASE ERROR: ' + e.stack));
     })
     .catch((e) => console.error('DATABASE ERROR: ' + e.stack));
@@ -153,5 +144,7 @@ module.exports = {
   insertDefaultCommandWithPermission,
   updateCommandWithPermission,
   insertGameCategoryFromChannel,
-  insertGameCategoryFromChannelWithVar
+  insertGameCategoryFromChannelWithVar,
+  insertDefaultCommandWithCooldown,
+  updateCommandWithCooldown
 };

@@ -3,7 +3,7 @@ const default_commands = [
   '!command',
   '!alias',
   '!permission',
-  // '!cooldown',
+  '!cooldown',
   // '!counter', // -> TODO
   '!choose',
   // '!data', (prob not fixing)
@@ -30,7 +30,7 @@ const default_permission_of_commands = {
   '!command': 2,
   '!alias': 2,
   '!permission': 2,
-  // '!cooldown': 2,
+  '!cooldown': 2,
   '!choose': 0,
   // '!data': 0,
   '!docs': 0,
@@ -56,7 +56,7 @@ const default_cooldown_of_commands = {
   '!command': 0,
   '!alias': 0,
   '!permission': 0,
-  // '!cooldown': 0,
+  '!cooldown': 0,
   '!choose': 10,
   // '!data': 0,
   '!docs': 0,

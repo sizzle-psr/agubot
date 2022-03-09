@@ -1,8 +1,8 @@
 const tmi = require("tmi.js");
 const dotenv = require("dotenv").config();
 const data = require("./src/utils/data");
-const data_command = require("./src/complex-cmds/data");
-const cooldowns = require("./src/complex-cmds/cooldowns");
+// const data_command = require("./src/complex-cmds/data");
+// const cooldowns = require("./src/complex-cmds/cooldowns");
 const { Client } = require('pg');
 const { command_parser } = require('./src/commands');
 // Define configuration options
@@ -42,22 +42,22 @@ data.load_pokemon_db(global.POKEMON_DB_PATH);
 data.load_move_db(global.MOVE_DB_PATH);
 // quotes.load_quote_db(global.QUOTE_DB_PATH);
 
-// Cooldowns can be handled without going to the database
-cooldowns.load_cds(global.CDS_DICT_DB_PATH, global.CDS_INDEX_DB_PATH);
+// // Cooldowns can be handled without going to the database
+// cooldowns.load_cds(global.CDS_DICT_DB_PATH, global.CDS_INDEX_DB_PATH);
 
 // Create a client with our options
 const client = new tmi.client(opts);
 
-global.viewer_average = -1;
-global.num_polls = 0;
-global.peak = 0;
-global.new_subs = 0;
-global.resubs = 0;
-global.gifted = 0;
-global.bits = 0;
+// global.viewer_average = -1;
+// global.num_polls = 0;
+// global.peak = 0;
+// global.new_subs = 0;
+// global.resubs = 0;
+// global.gifted = 0;
+// global.bits = 0;
 
-global.fetch_viewers = setInterval(data_command.getViewerAverage, 180000);
-data_command.getViewerAverage();
+// global.fetch_viewers = setInterval(data_command.getViewerAverage, 180000);
+// data_command.getViewerAverage();
 
 // Register our event handlers (defined below)
 client.on("message", onMessageHandler);
@@ -94,9 +94,7 @@ async function onMessageHandler(channel, userstate, msg, self) {
     }
     
     command_parser(commandName, userstate, client, channel, pg_client);
-    // if (ret[0] !== ret_codes.RetCodes.NOT_FOUND && ret[1] !== "") {
-    //   client.say(channel, ret[1]);
-    // }
+
   } catch (error) {
     console.log('"' + msg + '" failed its execution due to ' + error.message);
   }

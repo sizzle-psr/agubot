@@ -1,6 +1,6 @@
 const { concatLimit } = require("async");
 const fetch = require("node-fetch");
-const ret_codes = require("../utils/retcodes");
+// const ret_codes = require("../utils/retcodes");
 
 function handler(separated, client, target) {
   let game = separated[1];
