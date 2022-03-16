@@ -4,7 +4,7 @@ const default_commands = [
   '!alias',
   '!permission',
   '!cooldown',
-  // '!counter', // -> TODO
+  '!counter',
   '!choose',
   // '!data', (prob not fixing)
   '!docs',
@@ -31,6 +31,7 @@ const default_permission_of_commands = {
   '!alias': 2,
   '!permission': 2,
   '!cooldown': 2,
+  '!counter': 2,
   '!choose': 0,
   // '!data': 0,
   '!docs': 0,
@@ -57,6 +58,7 @@ const default_cooldown_of_commands = {
   '!alias': 0,
   '!permission': 0,
   '!cooldown': 0,
+  '!counter': 0,
   '!choose': 10,
   // '!data': 0,
   '!docs': 0,
@@ -82,6 +84,7 @@ const non_permission_downgrade = [
   '!alias',
   '!permission',
   '!cooldown',
+  '!counter',
   '!weather',
   '!setgame'
 ];
@@ -91,6 +94,7 @@ const non_aliasable = [
   '!alias',
   '!permission',
   '!cooldown',
+  '!counter',
   '!slots',
   '!expr',
   '!quote',

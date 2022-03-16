@@ -12,7 +12,7 @@ function handler(twitch_client, channel_name) {
   } else if (outcome < 1209) {
     twitch_client.say(channel_name, '233');
   } else if (outcome < 1214) {
-    twitch_client.say(channel_name, '233');
+    twitch_client.say(channel_name, '234');
   }
 }
 

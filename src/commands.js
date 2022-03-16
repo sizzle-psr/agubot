@@ -8,6 +8,7 @@ const { command_handler } = require('./handlers/command');
 const { setgame_handler } = require('./handlers/setgame');
 const { permission_handler } = require('./handlers/permission');
 const { cooldown_handler } = require('./handlers/cooldown');
+const { counter_handler, update_counter } = require('./handlers/counter');
 
 const _229 = require('./complex-cmds/229');
 const choose = require('./complex-cmds/choose');
@@ -92,6 +93,9 @@ function default_command_handler(separated_command, channel_name, twitch_client,
     case '!cooldown':
       cooldown_handler(separated_command, twitch_client, channel_name, pg_client);
       break;
+    case '!counter':
+      counter_handler(separated_command, channel_name, twitch_client, pg_client);
+      break;
     case '!choose':
       choose.handler(separated_command, twitch_client, channel_name);
       break;
@@ -159,6 +163,13 @@ async function command_parser(command_string, userstate, twitch_client, channel_
   separated_command = command_string.split(' ');
 
   command_name = separated_command[0].trim();
+
+  if (command_name.startsWith("-")) {
+    if (user_has_permission(2, userstate)) { // Counter is always mod or above only
+      update_counter(separated_command, channel_name, twitch_client, pg_client);
+    }
+    return;
+  }
 
   // Query Database for possible command info
   const query = {
