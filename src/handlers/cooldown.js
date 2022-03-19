@@ -7,7 +7,7 @@ function isNumeric(num) {
 
 async function async_cooldown_handler(separated_command, twitch_client, channel, pg_client) {
   const query = {
-    text: 'SELECT * FROM command WHERE channel = $1 AND name = $2',
+    text: 'SELECT * FROM command WHERE channel = $1 AND LOWER(name) = LOWER($2)',
     values: [channel, separated_command[2]],
   };
 

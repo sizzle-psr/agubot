@@ -7,7 +7,7 @@ function occurrences_plus_minus(string) {
 
 async function async_counter_handler(twitch_client, separated_command, pg_client, channel) {
   const query = {
-    text: 'SELECT * FROM counter WHERE channel = $1 AND name = $2',
+    text: 'SELECT * FROM counter WHERE channel = $1 AND LOWER(name) = LOWER($2)',
     values: [channel, separated_command[2]],
   };
 
@@ -105,7 +105,7 @@ function counter_handler(separated_command, channel, twitch_client, pg_client) {
 
 async function async_display_counter(separated_command, channel, twitch_client, pg_client) {
   const query = {
-    text: 'SELECT * FROM counter WHERE channel = $1 AND name = $2',
+    text: 'SELECT * FROM counter WHERE channel = $1 AND LOWER(name) = LOWER($2)',
     values: [channel, separated_command[0]],
   };
 
@@ -141,7 +141,7 @@ async function async_display_counter(separated_command, channel, twitch_client, 
 
 async function async_update_counter(separated_command, channel, twitch_client, pg_client) {
   const query = {
-    text: 'SELECT * FROM counter WHERE channel = $1 AND name = $2',
+    text: 'SELECT * FROM counter WHERE channel = $1 AND LOWER(name) = LOWER($2)',
     values: [channel, separated_command[0]],
   };
 

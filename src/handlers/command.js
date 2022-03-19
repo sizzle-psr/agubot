@@ -3,7 +3,7 @@ const { non_aliasable, default_commands } = require('../utils/defaults');
 
 async function async_command_handler(twitch_client, separated_command, pg_client, channel, isAlias) {
   const query = {
-    text: 'SELECT * FROM command WHERE channel = $1 AND name = $2',
+    text: 'SELECT * FROM command WHERE channel = $1 AND LOWER(name) = LOWER($2)',
     values: [channel, separated_command[2]],
   };
 

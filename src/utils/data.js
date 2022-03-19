@@ -29,7 +29,7 @@ function insertCommandFromChannel(command, output, channel, isAlias, pg_client) 
 
 function updateCommandOutput(command, channel, output, pg_client) {
   const query = {
-    text: 'UPDATE command SET output = $1 WHERE channel = $2 AND name = $3',
+    text: 'UPDATE command SET output = $1 WHERE channel = $2 AND LOWER(name) = LOWER($3)',
     values: [output, channel, command],
   };
 
@@ -38,7 +38,7 @@ function updateCommandOutput(command, channel, output, pg_client) {
 
 function deleteCommandFromChannel(command, channel, pg_client) {
   const query = {
-    text: 'DELETE FROM command WHERE channel = $1 AND name = $2',
+    text: 'DELETE FROM command WHERE channel = $1 AND LOWER(name) = LOWER($2)',
     values: [channel, command],
   };
 
@@ -58,7 +58,7 @@ function insertDefaultCommandWithCooldown(command, cooldown, channel, pg_client)
 
 function updateCommandWithCooldown(command, cooldown, channel, pg_client) {
   const query = {
-    text: 'UPDATE command SET cooldown = $1 WHERE channel = $2 AND name = $3',
+    text: 'UPDATE command SET cooldown = $1 WHERE channel = $2 AND LOWER(name) = LOWER($3)',
     values: [cooldown, channel, command],
   };
 
@@ -78,7 +78,7 @@ function insertDefaultCommandWithPermission(command, permission, channel, pg_cli
 
 function updateCommandWithPermission(command, permission, channel, pg_client) {
   const query = {
-    text: 'UPDATE command SET permission = $1 WHERE channel = $2 AND name = $3',
+    text: 'UPDATE command SET permission = $1 WHERE channel = $2 AND LOWER(name) = LOWER($3)',
     values: [permission, channel, command],
   };
 
@@ -146,7 +146,7 @@ function insertCounterFromChannel(counter_name, channel, pg_client) {
 
 function updateCounter(counter_name, successes, total, channel, pg_client) {
   const query = {
-    text: 'UPDATE counter SET successes = $1, total=$2  WHERE channel = $3 AND name = $4',
+    text: 'UPDATE counter SET successes = $1, total=$2  WHERE channel = $3 AND LOWER(name) = LOWER($4)',
     values: [parseInt(successes), parseInt(total), channel, counter_name],
   };
 
@@ -155,7 +155,7 @@ function updateCounter(counter_name, successes, total, channel, pg_client) {
 
 function deleteCounterFromChannel(counter_name, channel, pg_client) {
   const query = {
-    text: 'DELETE FROM counter WHERE channel = $1 AND name = $2',
+    text: 'DELETE FROM counter WHERE channel = $1 AND LOWER(name) = LOWER($2)',
     values: [channel, counter_name],
   };
 

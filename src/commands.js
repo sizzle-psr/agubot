@@ -173,7 +173,7 @@ async function command_parser(command_string, userstate, twitch_client, channel_
 
   // Query Database for possible command info
   const query = {
-    text: 'SELECT * FROM command WHERE channel = $1 AND name = $2',
+    text: 'SELECT * FROM command WHERE channel = $1 AND LOWER(name) = LOWER($2)',
     values: [channel_name, command_name],
   };
 
