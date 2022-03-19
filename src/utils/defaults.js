@@ -15,6 +15,7 @@ const default_commands = [
   '!pinballslots',
   // '!quote', (needs evaluation of db)
   '!randmon',
+  '!randrunner',
   '!roll',
   '!setgame',
   // '!setrunner', -> TODO
@@ -42,6 +43,7 @@ const default_permission_of_commands = {
   // '!pb': 0,
   // '!quote': 0,
   '!randmon': 0,
+  '!randrunner': 0,
   '!roll': 0,
   '!setgame': 2,
   // '!setrunner': 2,
@@ -69,6 +71,7 @@ const default_cooldown_of_commands = {
   // '!pb': 0,
   // '!quote': 0,
   '!randmon': 10,
+  '!randrunner': 10,
   '!roll': 10,
   '!setgame': 0,
   // '!setrunner': 0,
