@@ -88,8 +88,8 @@ async function onMessageHandler(channel, userstate, msg, self) {
     // Remove whitespace from chat message
     const commandName = msg.trim();
 
-    // Don't want to overload the database by querying every message
-    if ((!commandName.startsWith("!") && !commandName.startsWith("-")) || userstate == undefined) {
+    // Query every message, hopefully nothing breaks
+    if (userstate == undefined) {
       return;
     }
     

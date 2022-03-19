@@ -128,8 +128,8 @@ function command_handler(separated_command, channel, twitch_client, pg_client, i
       // new command can't have the same name as a default command
     } else if (default_commands.indexOf(separated_command[2]) != -1) {
       twitch_client.say(channel, separated_command[2] + ' is already a default command.');
-    } else if (separated_command.length >= 4 && !separated_command[2].startsWith('!')) {
-      twitch_client.say(channel, 'Custom commands must start with !.');
+    // } else if (separated_command.length >= 4 && !separated_command[2].startsWith('!')) {
+    //   twitch_client.say(channel, 'Custom commands must start with !.');
     } else {
       async_command_handler(twitch_client, separated_command, pg_client, channel, isAlias);
     }
