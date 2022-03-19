@@ -165,8 +165,9 @@ async function command_parser(command_string, userstate, twitch_client, channel_
   command_name = separated_command[0].trim();
 
   if (command_name.startsWith("-")) {
-    if (user_has_permission(2, userstate)) { // Counter is always mod or above only
-      update_counter(separated_command, channel_name, twitch_client, pg_client);
+    let is_mod = user_has_permission(2, userstate);
+    if (is_mod || separated_command.length == 1) { // Counter is always mod or above, unless to check
+      update_counter(separated_command, channel_name, twitch_client, pg_client, is_mod);
     }
     return;
   }

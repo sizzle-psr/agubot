@@ -103,7 +103,7 @@ function counter_handler(separated_command, channel, twitch_client, pg_client) {
   }
 }
 
-async function async_display_counter(separated_command, channel, twitch_client, pg_client) {
+async function async_display_counter(separated_command, channel, twitch_client, pg_client, is_mod) {
   const query = {
     text: 'SELECT * FROM counter WHERE channel = $1 AND LOWER(name) = LOWER($2)',
     values: [channel, separated_command[0]],
@@ -113,7 +113,9 @@ async function async_display_counter(separated_command, channel, twitch_client, 
     .query(query)
     .then((res) => {
       if (res.rows.length === 0) {
-        twitch_client.say(channel, 'Counter ' + separated_command[0] + ' does not exist.');
+        if (is_mod) {
+          twitch_client.say(channel, 'Counter ' + separated_command[0] + ' does not exist.');
+        }
       } else {
         let total = parseInt(res.rows[0]['total']);
         let successes = parseInt(res.rows[0]['successes']);
@@ -185,11 +187,13 @@ async function async_update_counter(separated_command, channel, twitch_client, p
     });
 }
 
-function update_counter(separated_command, channel, twitch_client, pg_client) {
+function update_counter(separated_command, channel, twitch_client, pg_client, is_mod) {
   if (separated_command.length == 1) {
-    async_display_counter(separated_command, channel, twitch_client, pg_client);
+    async_display_counter(separated_command, channel, twitch_client, pg_client, is_mod);
     return;
   }
+
+  if (!is_mod) return;
 
   if (
     separated_command.length != 2 ||
