@@ -26,7 +26,7 @@ const default_commands = [
 ];
 
 const default_permission_of_commands = {
-  '!229': 0,
+  '!229': 3,
   '!command': 2,
   '!alias': 2,
   '!permission': 2,

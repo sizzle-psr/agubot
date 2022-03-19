@@ -8,8 +8,8 @@ async function async_setgame_handler(game, category, channel, twitch_client, pg_
   const result = await fetch(url_game);
   const res_json = await result.json();
 
-  if (result.status != 200) {
-    twitch_client.say(channel, 'Game not found');
+  if (result.status != 200 || res_json.data.length == 0) {
+    twitch_client.say(channel, 'Game \"' + game + '\" not found.');
     return;
   }
 
@@ -32,7 +32,7 @@ async function async_setgame_handler(game, category, channel, twitch_client, pg_
   }
 
   if (cat_id === '') {
-    twitch_client.say(channel, 'Category not found');
+    twitch_client.say(channel, 'Category \"' + category + '\" not found.');
     return;
   }
 
