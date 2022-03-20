@@ -6,6 +6,7 @@ const {
 } = require('./utils/defaults');
 const { command_handler } = require('./handlers/command');
 const { setgame_handler } = require('./handlers/setgame');
+const { setrunner_handler } = require('./handlers/setrunner');
 const { permission_handler } = require('./handlers/permission');
 const { cooldown_handler } = require('./handlers/cooldown');
 const { counter_handler, update_counter } = require('./handlers/counter');
@@ -16,6 +17,7 @@ const choose = require('./complex-cmds/choose');
 const expr = require('./complex-cmds/expr');
 const isredbar = require('./complex-cmds/isredbar');
 const metronome = require('./complex-cmds/metronome');
+const pb = require('./complex-cmds/pb');
 const pinballslots = require('./complex-cmds/pinballslots');
 const randmon = require('./complex-cmds/randmon');
 const randrunner = require('./complex-cmds/randrunner');
@@ -118,6 +120,9 @@ function default_command_handler(separated_command, channel_name, twitch_client,
     case '!metronome':
       metronome.handler(twitch_client, channel_name);
       break;
+    case '!pb':
+      pb.handler(channel_name, twitch_client, pg_client);
+      break;
     case '!pinballslots':
       pinballslots.handler(twitch_client, channel_name, userstate.username);
       break;
@@ -132,6 +137,9 @@ function default_command_handler(separated_command, channel_name, twitch_client,
       break;
     case '!setgame':
       setgame_handler(separated_command, channel_name, twitch_client, pg_client);
+      break;
+    case '!setrunner':
+      setrunner_handler(separated_command, channel_name, twitch_client, pg_client);
       break;
     case '!slots':
       slots.handler(twitch_client, channel_name, userstate.username);

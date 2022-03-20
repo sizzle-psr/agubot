@@ -133,6 +133,27 @@ function insertGameCategoryFromChannelWithVar(
     .catch((e) => console.error('DATABASE ERROR: ' + e.stack));
 }
 
+/* ======================= Runner =======================*/
+
+function insertRunner(runner_name, runner_id, pg_client, channel) {
+  const deletion_query = {
+    text: 'DELETE FROM runner WHERE channel = $1',
+    values: [channel],
+  };
+
+  pg_client
+    .query(deletion_query)
+    .then((res) => {
+      const insert_query = {
+        text: 'INSERT INTO runner (name, id, channel) VALUES ($1, $2, $3)',
+        values: [runner_name, runner_id, channel],
+      };
+
+      pg_client.query(insert_query).catch((e) => console.error('DATABASE ERROR: ' + e.stack));
+    })
+    .catch((e) => console.error('DATABASE ERROR: ' + e.stack));
+}
+
 /* ======================= Counter =======================*/
 
 function insertCounterFromChannel(counter_name, channel, pg_client) {
@@ -172,6 +193,7 @@ module.exports = {
   updateCommandWithPermission,
   insertGameCategoryFromChannel,
   insertGameCategoryFromChannelWithVar,
+  insertRunner,
   insertDefaultCommandWithCooldown,
   updateCommandWithCooldown,
   insertCounterFromChannel,

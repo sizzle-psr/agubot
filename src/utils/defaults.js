@@ -11,14 +11,14 @@ const default_commands = [
   '!expr',
   '!isredbar',
   '!metronome',
-  // '!pb', -> TODO
+  '!pb',
   '!pinballslots',
   // '!quote', (needs evaluation of db)
   '!randmon',
   '!randrunner',
   '!roll',
   '!setgame',
-  // '!setrunner', -> TODO
+  '!setrunner',
   '!slots',
   // '!src', -> TODO
   '!torrent',
@@ -40,13 +40,13 @@ const default_permission_of_commands = {
   '!isredbar': 0,
   '!metronome': 0,
   '!pinballslots': 3,
-  // '!pb': 0,
+  '!pb': 0,
   // '!quote': 0,
   '!randmon': 0,
   '!randrunner': 0,
   '!roll': 0,
   '!setgame': 2,
-  // '!setrunner': 2,
+  '!setrunner': 2,
   '!slots': 0,
   // '!src': 0,
   '!torrent': 0,
@@ -68,13 +68,13 @@ const default_cooldown_of_commands = {
   '!isredbar': 0,
   '!metronome': 10,
   '!pinballslots': 600,
-  // '!pb': 0,
+  '!pb': 0,
   // '!quote': 0,
   '!randmon': 10,
   '!randrunner': 10,
   '!roll': 10,
   '!setgame': 0,
-  // '!setrunner': 0,
+  '!setrunner': 0,
   '!slots': 600,
   // '!src': 10,
   '!torrent': 10,
@@ -89,7 +89,8 @@ const non_permission_downgrade = [
   '!cooldown',
   '!counter',
   '!weather',
-  '!setgame'
+  '!setgame',
+  '!setrunner'
 ];
 
 const non_aliasable = [
