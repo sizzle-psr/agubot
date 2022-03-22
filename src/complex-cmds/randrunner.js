@@ -10,7 +10,7 @@ var runner_list = [
   'Swift alu',
   'sco agogo',
   'Mach Wing',
-  'KidRo cker96',
+  'Kid Rocker96',
   'Driek iann',
   'edda ket',
   'Wh0mis DS',
@@ -79,7 +79,7 @@ var runner_list = [
   'Q palz',
   'zen aga',
   'luck less',
-  'lovesick hero',
+  'LoveSick Hero',
   'bang Yongguk',
   'AnaI Pikachu',
   'Primal Pizza',
@@ -123,6 +123,7 @@ var runner_list = [
   'puny uta',
   'Tucker LeRat',
   'Gimmy Thomas',
+  'nerdy nerd32'
 ]; // Credit to AmoebaUK and Scoagogo for compiling and providing this list
 
 function handler(twitch_client, channel_name) {

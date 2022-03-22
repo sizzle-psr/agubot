@@ -21,6 +21,7 @@ const pb = require('./complex-cmds/pb');
 const pinballslots = require('./complex-cmds/pinballslots');
 const randmon = require('./complex-cmds/randmon');
 const randrunner = require('./complex-cmds/randrunner');
+const randstats = require('./complex-cmds/randstats');
 const roll = require('./complex-cmds/roll');
 const slots = require('./complex-cmds/slots');
 // const src = require('./complex-cmds/src');
@@ -134,6 +135,9 @@ function default_command_handler(separated_command, channel_name, twitch_client,
       break;
     case '!randrunner':
       randrunner.handler(twitch_client, channel_name);
+      break;
+    case '!randstats':
+      randstats.handler(twitch_client, channel_name);
       break;
     case '!setgame':
       setgame_handler(separated_command, channel_name, twitch_client, pg_client);

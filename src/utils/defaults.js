@@ -16,6 +16,7 @@ const default_commands = [
   // '!quote', (needs evaluation of db)
   '!randmon',
   '!randrunner',
+  '!randstats',
   '!roll',
   '!setgame',
   '!setrunner',
@@ -44,6 +45,7 @@ const default_permission_of_commands = {
   // '!quote': 0,
   '!randmon': 0,
   '!randrunner': 0,
+  '!randstats': 0,
   '!roll': 0,
   '!setgame': 2,
   '!setrunner': 2,
@@ -72,6 +74,7 @@ const default_cooldown_of_commands = {
   // '!quote': 0,
   '!randmon': 10,
   '!randrunner': 10,
+  '!randstats': 10,
   '!roll': 10,
   '!setgame': 0,
   '!setrunner': 0,
