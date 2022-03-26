@@ -66,7 +66,9 @@ function command_is_on_cooldown_for_user(command_name, cooldown_time, username, 
       let now = new Date();
       const last_usage = last_usage_of_user_per_command[command_name][username];
       const diff_time = Math.ceil(Math.abs(last_usage - now) / 1000);
-      last_usage_of_user_per_command[command_name][username] = new Date();
+      if (diff_time >= cooldown_time) {
+        last_usage_of_user_per_command[command_name][username] = new Date();
+      }
       return diff_time < cooldown_time;
     } else {
       last_usage_of_user_per_command[command_name][username] = new Date();
