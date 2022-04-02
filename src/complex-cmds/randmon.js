@@ -1,3 +1,5 @@
+const random = require("random");
+
 function handler(separated_command, twitch_client, channel_name) {
   var gen_num;
   if (separated_command.length < 2) {
@@ -7,7 +9,10 @@ function handler(separated_command, twitch_client, channel_name) {
   }
 
   if (!Number.isInteger(gen_num) || gen_num < 1 || gen_num > 8) {
-    twitch_client.say(channel_name, "Correct syntax: !randmon [generation] [pokemon]");
+    twitch_client.say(
+      channel_name,
+      "Correct syntax: !randmon [generation] [pokemon]"
+    );
     return;
   }
   var num_pokes;
@@ -20,7 +25,7 @@ function handler(separated_command, twitch_client, channel_name) {
   else if (gen_num == 7) num_pokes = 809;
   else num_pokes = global.pokemon_db.length;
 
-  let num = Math.floor(Math.random() * num_pokes);
+  let num = random.int(0, num_pokes - 1);
   twitch_client.say(
     channel_name,
     "Pkmn Trainer Red sent out " + global.pokemon_db[num].name.english + "!"

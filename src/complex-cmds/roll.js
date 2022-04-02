@@ -1,8 +1,10 @@
+const random = require("random");
+
 function handler(separated_command, twitch_client, channel_name) {
   if (separated_command.length < 2) {
     twitch_client.say(
       channel_name,
-      "The roll returned " + (Math.floor(Math.random() * 100) + 1) + "."
+      "The roll returned " + String(random.int(0, 99)) + "."
     );
     return;
   }
@@ -15,7 +17,7 @@ function handler(separated_command, twitch_client, channel_name) {
 
   twitch_client.say(
     channel_name,
-    "The roll returned " + (Math.floor(Math.random() * max) + 1) + "."
+    "The roll returned " + String(random.int(0, max)) + "."
   );
 }
 

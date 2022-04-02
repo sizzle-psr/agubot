@@ -4,7 +4,8 @@
   "description": "A simple app chatbot example. Using the command !echo will simply repeat the message.",
   "main": "bot.js",
   "scripts": {
-    "start": "node bot.js"
+    "start": "node bot.js",
+    "pretty": "prettier --write \"./**/*.{js,jsx,json}\""
   },
   "dependencies": {
     "async": "^3.2.0",
@@ -14,6 +15,7 @@
     "node-fetch": "^2.6.1",
     "package.json": "^2.0.1",
     "pg": "^8.7.1",
+    "random": "^3.0.6",
     "tmi.js": "^1.8.5"
   },
   "engines": {
@@ -27,5 +29,8 @@
     "twitch",
     "chatbots",
     "irc"
-  ]
+  ],
+  "devDependencies": {
+    "prettier": "^2.6.1"
+  }
 }

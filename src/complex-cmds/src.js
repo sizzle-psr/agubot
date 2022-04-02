@@ -21,7 +21,7 @@ function handler(separated, client, target) {
   separated.pop();
 
   agentOptions = {
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
   };
 
   let category = separated.join(" ");
@@ -31,8 +31,10 @@ function handler(separated, client, target) {
   var game_name;
   const request = async () => {
     try {
-
-      var res = await fetch("https://www.speedrun.com/api/v1/games/" + game, agentOptions);
+      var res = await fetch(
+        "https://www.speedrun.com/api/v1/games/" + game,
+        agentOptions
+      );
       var res_json = await res.json();
 
       if (res_json.status) {
@@ -54,7 +56,10 @@ function handler(separated, client, target) {
       }
 
       if (!cat_id) {
-        client.say(target, category + " is not a category of " + game_name + ".");
+        client.say(
+          target,
+          category + " is not a category of " + game_name + "."
+        );
         return;
       }
 
@@ -125,7 +130,11 @@ function handler(separated, client, target) {
       let data = r.data;
 
       // Get the ordinal termination for the output message
-      if (place.endsWith("13") || place.endsWith("12") || place.endsWith("11")) {
+      if (
+        place.endsWith("13") ||
+        place.endsWith("12") ||
+        place.endsWith("11")
+      ) {
         termination = "th";
       } else if (place.endsWith("3")) {
         termination = "rd";
@@ -174,7 +183,10 @@ function handler(separated, client, target) {
       run_time = tmp + ":" + run_time;
 
       // Get the user of the queried run
-      res = await fetch("https://www.speedrun.com/api/v1/users/" + user_id, agentOptions);
+      res = await fetch(
+        "https://www.speedrun.com/api/v1/users/" + user_id,
+        agentOptions
+      );
       res_json = await res.json();
       data = await res_json.data;
       user_name = await data.names;
@@ -209,9 +221,8 @@ function handler(separated, client, target) {
       }
       message = message + " | Video: " + video_url;
       client.say(target, message);
-
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   };
 

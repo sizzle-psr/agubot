@@ -3,15 +3,15 @@ const dotenv = require("dotenv").config();
 const data = require("./src/utils/data");
 // const data_command = require("./src/complex-cmds/data");
 // const cooldowns = require("./src/complex-cmds/cooldowns");
-const { Client } = require('pg');
-const { command_parser } = require('./src/commands');
+const { Client } = require("pg");
+const { command_parser } = require("./src/commands");
 // Define configuration options
 const opts = {
   identity: {
     username: process.env.BOT_USERNAME,
     password: process.env.OAUTH_TOKEN,
   },
-  channels: process.env.CHANNEL_LIST.split(', '),
+  channels: process.env.CHANNEL_LIST.split(", "),
   joinInterval: 3000,
 };
 
@@ -19,8 +19,8 @@ const opts = {
 const pg_client = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false
-  }
+    rejectUnauthorized: false,
+  },
 });
 
 pg_client.connect();
@@ -92,9 +92,8 @@ async function onMessageHandler(channel, userstate, msg, self) {
     if (userstate == undefined) {
       return;
     }
-    
-    command_parser(commandName, userstate, client, channel, pg_client);
 
+    command_parser(commandName, userstate, client, channel, pg_client);
   } catch (error) {
     console.log('"' + msg + '" failed its execution due to ' + error.message);
   }

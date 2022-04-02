@@ -1,36 +1,39 @@
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 
 async function print_record(res, twitch_client, channel_name) {
-  game_abbrv = res.rows[0]['game_abbrv'].trim();
-  cat_id = res.rows[0]['cat_id'].trim();
-  game_name = res.rows[0]['game_name'].trim();
-  var_url_string = '';
+  game_abbrv = res.rows[0]["game_abbrv"].trim();
+  cat_id = res.rows[0]["cat_id"].trim();
+  game_name = res.rows[0]["game_name"].trim();
+  var_url_string = "";
 
-  if (res.rows[0]['var_id'] != null) {
-    var_id_string = res.rows[0]['var_id'].trim();
-    var_value_string = res.rows[0]['var_value'].trim();
-  
-    var_ids = var_id_string.split(' ');
-    var_values = var_value_string.split(' ');
-  
+  if (res.rows[0]["var_id"] != null) {
+    var_id_string = res.rows[0]["var_id"].trim();
+    var_value_string = res.rows[0]["var_value"].trim();
+
+    var_ids = var_id_string.split(" ");
+    var_values = var_value_string.split(" ");
 
     for (i = 0; i < var_ids.length; i++) {
-      var_url_string = var_url_string + '&var-' + var_ids[i] + '=' + var_values[i];
+      var_url_string =
+        var_url_string + "&var-" + var_ids[i] + "=" + var_values[i];
     }
   }
 
   res = await fetch(
-    'https://www.speedrun.com/api/v1/leaderboards/' +
+    "https://www.speedrun.com/api/v1/leaderboards/" +
       game_abbrv +
-      '/category/' +
+      "/category/" +
       cat_id +
-      '?top=1' +
+      "?top=1" +
       var_url_string
   );
   res_json = await res.json();
 
   if (res.status != 200) {
-    twitch_client.say(channel_name, 'Record not found. Is the SRC API working?');
+    twitch_client.say(
+      channel_name,
+      "Record not found. Is the SRC API working?"
+    );
     return;
   }
 
@@ -41,7 +44,10 @@ async function print_record(res, twitch_client, channel_name) {
   res_runner_json = await res_runner.json();
 
   if (res_runner.status != 200) {
-    twitch_client.say(channel_name, 'Record Runner not found. Is the SRC API working?');
+    twitch_client.say(
+      channel_name,
+      "Record Runner not found. Is the SRC API working?"
+    );
     return;
   }
   record_runner_name = res_runner_json.data.names.international;
@@ -67,24 +73,26 @@ async function print_record(res, twitch_client, channel_name) {
 
   record_hours = Math.floor(record_time / 60 / 60);
   record_minutes = Math.floor((record_time - 3600 * record_hours) / 60);
-  record_seconds = Math.floor(record_time - 3600 * record_hours - 60 * record_minutes);
+  record_seconds = Math.floor(
+    record_time - 3600 * record_hours - 60 * record_minutes
+  );
 
   output_string =
-    'The WR for ' +
+    "The WR for " +
     record_game_name +
-    ' ' +
+    " " +
     record_cat_name +
-    ' was set by ' +
+    " was set by " +
     record_runner_name +
-    ' on ' +
+    " on " +
     record_date +
-    ' with a time of ' +
+    " with a time of " +
     record_hours +
-    'h' +
+    "h" +
     record_minutes +
-    'm' +
+    "m" +
     record_seconds +
-    's. Run Video: ' +
+    "s. Run Video: " +
     record_video_url;
 
   twitch_client.say(channel_name, output_string);
@@ -92,13 +100,16 @@ async function print_record(res, twitch_client, channel_name) {
 
 async function async_handler(channel_name, twitch_client, pg_client) {
   const query = {
-    text: 'SELECT * FROM games WHERE channel = $1',
+    text: "SELECT * FROM games WHERE channel = $1",
     values: [channel_name],
   };
 
   await pg_client.query(query).then((res) => {
     if (res.rows.length === 0) {
-      twitch_client.say(channel_name, 'No game is set. Please use !setgame to set a game.');
+      twitch_client.say(
+        channel_name,
+        "No game is set. Please use !setgame to set a game."
+      );
       return;
     } else if (res.rows.length === 1) {
       print_record(res, twitch_client, channel_name);

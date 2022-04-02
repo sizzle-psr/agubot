@@ -1,4 +1,5 @@
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
+const random = require("random");
 
 global.lastFetch = -1;
 global.twitchemotes = undefined;
@@ -7,7 +8,7 @@ global.twitchemotes = undefined;
 function shuffle(a) {
   var j, x, i;
   for (i = a.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i + 1));
+    j = Math.floor(random.float() * (i + 1));
     x = a[i];
     a[i] = a[j];
     a[j] = x;
@@ -24,11 +25,11 @@ function handler(client, target, user) {
     //api.betterttv.net/2/emotes
 
     // Get bettertv general emotes
-    var res2_ = await fetch('https://api.betterttv.net/2/emotes');
+    var res2_ = await fetch("https://api.betterttv.net/2/emotes");
     var res_json2 = await res2_.json();
 
     if (res2_.status != 200) {
-      client.say(target, 'Could not find bettertv emotes');
+      client.say(target, "Could not find bettertv emotes");
       return;
     }
 
@@ -37,11 +38,13 @@ function handler(client, target, user) {
     }
 
     // Get bettertv general emotes
-    var res7_ = await fetch('https://api.betterttv.net/2/channels/' + target.replace('#', ''));
+    var res7_ = await fetch(
+      "https://api.betterttv.net/2/channels/" + target.replace("#", "")
+    );
     var res_json7 = await res7_.json();
 
     if (res7_.status != 200) {
-      client.say(target, 'Could not find bettertv channel emotes');
+      client.say(target, "Could not find bettertv channel emotes");
       return;
     }
 
@@ -50,7 +53,7 @@ function handler(client, target, user) {
     }
 
     // Get FrankerFaceZ global emotes
-    var res3 = await fetch('https://api.frankerfacez.com/v1/set/global');
+    var res3 = await fetch("https://api.frankerfacez.com/v1/set/global");
     var res_json3 = await res3.json();
 
     for (entry in res_json3.sets) {
@@ -62,7 +65,9 @@ function handler(client, target, user) {
     }
 
     // Get FrankerFaceZ channel emotes
-    var res4 = await fetch('https://api.frankerfacez.com/v1/room/' + target.replace('#', ''));
+    var res4 = await fetch(
+      "https://api.frankerfacez.com/v1/room/" + target.replace("#", "")
+    );
     var res_json4 = await res4.json();
 
     for (entry in res_json4.sets) {
@@ -72,60 +77,69 @@ function handler(client, target, user) {
     }
 
     if (emotes.length < 64) {
-      if (global.lastFetch == -1 || (Date.now() - global.lastFetch) / 3600000 >= 0.5) {
+      if (
+        global.lastFetch == -1 ||
+        (Date.now() - global.lastFetch) / 3600000 >= 0.5
+      ) {
         var res_auth = await fetch(
-          'https://id.twitch.tv/oauth2/token?client_id=' +
+          "https://id.twitch.tv/oauth2/token?client_id=" +
             process.env.CLIENT_ID +
-            '&client_secret=' +
+            "&client_secret=" +
             process.env.CLIENT_SECRET +
-            '&grant_type=client_credentials',
+            "&grant_type=client_credentials",
           {
-            method: 'POST',
+            method: "POST",
           }
         );
         var res_auth_json = await res_auth.json();
         global.lastFetch = Date.now();
         // Get twitch emotes
-        var res = await fetch('https://api.twitch.tv/helix/chat/emotes/global', {
-          headers: {
-            Authorization: 'Bearer ' + res_auth_json.access_token,
-            'Client-Id': process.env.CLIENT_ID,
-          },
-        });
+        var res = await fetch(
+          "https://api.twitch.tv/helix/chat/emotes/global",
+          {
+            headers: {
+              Authorization: "Bearer " + res_auth_json.access_token,
+              "Client-Id": process.env.CLIENT_ID,
+            },
+          }
+        );
         var res_json = await res.json();
 
         if (res.status != 200) {
-          client.say(target, 'Could not find twitch emotes');
+          client.say(target, "Could not find twitch emotes");
           return;
         }
 
         global.twitchemotes = res_json.data;
 
         for (entry in res_json.data) {
-          emotes.push(res_json.data[entry]['name']);
+          emotes.push(res_json.data[entry]["name"]);
         }
       } else {
         for (entry in global.twitchemotes) {
-          emotes.push(global.twitchemotes[entry]['name']);
+          emotes.push(global.twitchemotes[entry]["name"]);
         }
       }
 
       if (emotes.length < 64) {
-        client.say(target, 'Could not find enough emotes to run slots!');
+        client.say(target, "Could not find enough emotes to run slots!");
         return;
       }
     }
     // Randomize the array
     emotes = shuffle(emotes);
 
-    var num1 = Math.floor(Math.random() * 16);
-    var num2 = Math.floor(Math.random() * 16);
-    var num3 = Math.floor(Math.random() * 16);
+    const num1 = random.int(0, 15);
+    const num2 = random.int(0, 15);
+    const num3 = random.int(0, 15);
 
-    client.say(target, user + ' -> ' + emotes[num1] + ' | ' + emotes[num2] + ' | ' + emotes[num3]);
+    client.say(
+      target,
+      user + " -> " + emotes[num1] + " | " + emotes[num2] + " | " + emotes[num3]
+    );
 
     if (num1 === num2 && num2 === num3) {
-      client.say(target, user + ' has won Slots!');
+      client.say(target, user + " has won Slots!");
     }
   };
 

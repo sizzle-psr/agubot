@@ -49,10 +49,10 @@ function handler(separated_command, twitch_client, channel_name) {
   }
   try {
     var ret = limitedEvaluate(expression);
-    twitch_client.say(channel_name, String(ret))
-    return ;
+    twitch_client.say(channel_name, String(ret));
+    return;
   } catch (error) {
-    console.log(error)
+    console.log(error);
     twitch_client.say(channel_name, "Error when evaluating the expression.");
     return;
   }
