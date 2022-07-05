@@ -1,10 +1,10 @@
 const random = require("random");
-function handler(separated_command, twitch_client, channel) {
+function handler(separated_command, twitch_client, channel, userstate) {
   separated_command.shift(); // Removes "!choose"
   let str = separated_command.join(" "); // Joins the string back together
   let options = str.split("|"); // Separates into options
   if (options.length > 1) {
-    twitch_client.say(channel, options[random.int(0, options.length - 1)]);
+    twitch_client.say(channel, options[random.int(0, options.length - 1)].replace('{user}', userstate.username.replace('#','')));
   } else {
     if (options[0] !== "") {
       twitch_client.say(

@@ -144,7 +144,7 @@ function default_command_handler(
       );
       break;
     case "!choose":
-      choose.handler(separated_command, twitch_client, channel_name);
+      choose.handler(separated_command, twitch_client, channel_name, userstate);
       break;
     case "!docs":
       twitch_client.say(
@@ -235,7 +235,7 @@ async function custom_command_handler(
       pg_client
     );
   } else {
-    twitch_client.say(channel_name, command_obj["output"]);
+    twitch_client.say(channel_name, command_obj["output"].replace('{user}', userstate.username.replace('#','')));
   }
 }
 
