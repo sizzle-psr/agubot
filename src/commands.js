@@ -15,6 +15,7 @@ const _229 = require("./complex-cmds/229");
 const choose = require("./complex-cmds/choose");
 // const data = require('./complex-cmds/data');
 const expr = require("./complex-cmds/expr");
+const flail = require("./complex-cmds/flail");
 const isredbar = require("./complex-cmds/isredbar");
 const metronome = require("./complex-cmds/metronome");
 const pb = require("./complex-cmds/pb");
@@ -29,6 +30,7 @@ const torrent = require("./complex-cmds/torrent");
 const weather = require("./complex-cmds/weather");
 const wr = require("./complex-cmds/wr");
 const { defaults } = require("pg/lib");
+const { flatMapLimit } = require("async");
 
 // This has format:
 // {
@@ -157,6 +159,9 @@ function default_command_handler(
     // break;
     case "!expr":
       expr.handler(separated_command, twitch_client, channel_name);
+      break;
+    case "!flail":
+      flail.handler(separated_command, twitch_client, channel_name);
       break;
     case "!isredbar":
       isredbar.handler(separated_command, twitch_client, channel_name);

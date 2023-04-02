@@ -9,6 +9,7 @@ const default_commands = [
   // '!data', (prob not fixing)
   "!docs",
   "!expr",
+  "!flail",
   "!isredbar",
   "!metronome",
   "!pb",
@@ -38,6 +39,7 @@ const default_permission_of_commands = {
   // '!data': 0,
   "!docs": 0,
   "!expr": 1, // avoid misusage, can be dowgraded
+  "!flail": 0,
   "!isredbar": 0,
   "!metronome": 0,
   "!pinballslots": 3,
@@ -67,6 +69,7 @@ const default_cooldown_of_commands = {
   // '!data': 0,
   "!docs": 0,
   "!expr": 15, // avoid misusage, can be lowered
+  "!flail": 0,
   "!isredbar": 0,
   "!metronome": 10,
   "!pinballslots": 600,

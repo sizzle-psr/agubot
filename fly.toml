@@ -1,0 +1,23 @@
+# fly.toml file generated for agubot on 2022-11-20T16:01:41Z
+
+app = "agubot"
+kill_signal = "SIGINT"
+kill_timeout = 5
+processes = []
+
+[env]
+  ALIAS_DB_PATH = "./data/aliases.json"
+  BOT_USERNAME = "agubotpsr"
+  CDS_DICT_DB_PATH = "./data/cds_dict.json"
+  CDS_INDEX_DB_PATH = "./data/cds_index.json"
+  CHANNEL_LIST = "exarionu, sizzleskeleton, amoebauk, kukkertm, yourfriendAndy, scoagogo, kidrocker96, jp_xinnam, psrdiversity, pokemonspeedrunstv, ekman_larsson, goddessmariatas, pokemonspeedrunstv2"
+  CHANNEL_NAME = "sizzleskeleton"
+  COMMAND_DB_PATH = "./data/commands.json"
+  MOVE_DB_PATH = "./data/moves.json"
+  PERMISSION_DB_PATH = "./data/permissions.json"
+  POKEMON_DB_PATH = "./data/pokemon.json"
+  QUOTE_DB_PATH = "./data/quotes.json"
+
+[experimental]
+  allowed_public_ports = []
+  auto_rollback = false
