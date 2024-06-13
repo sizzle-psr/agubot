@@ -96,7 +96,7 @@ function endHangman(target, client, reason) {
 
 function setHangmanCooldown(target, client) {
   let cooldown = HANGMAN_COOLDOWN_MINUTES * 60 * 1000;
-  // Set a 5-minute cooldown for the !hangman command in this channel
+  // Set a cooldown for the !hangman command in this channel
   hangmanCooldowns[target] = Date.now() + cooldown;
 
   // Schedule a message to be sent after the cooldown period is over
