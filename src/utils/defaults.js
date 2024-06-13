@@ -9,6 +9,8 @@ const default_commands = [
   // '!data', (prob not fixing)
   "!docs",
   "!expr",
+  "!guess",
+  "!hangman",
   "!flail",
   "!isredbar",
   "!metronome",

@@ -16,6 +16,7 @@ const choose = require("./complex-cmds/choose");
 // const data = require('./complex-cmds/data');
 const expr = require("./complex-cmds/expr");
 const flail = require("./complex-cmds/flail");
+const hangman = require("./complex-cmds/hangman");
 const isredbar = require("./complex-cmds/isredbar");
 const metronome = require("./complex-cmds/metronome");
 const pb = require("./complex-cmds/pb");
@@ -91,6 +92,7 @@ function command_is_on_cooldown_for_user(
 }
 
 function default_command_handler(
+  command_string,
   separated_command,
   channel_name,
   twitch_client,
@@ -162,6 +164,12 @@ function default_command_handler(
       break;
     case "!flail":
       flail.handler(separated_command, twitch_client, channel_name);
+      break;
+    case "!guess":
+        hangman.guess(command_string, twitch_client, channel_name, userstate.username);
+        break;
+    case "!hangman":
+      hangman.start(twitch_client, channel_name);
       break;
     case "!isredbar":
       isredbar.handler(separated_command, twitch_client, channel_name);
@@ -298,6 +306,7 @@ async function command_parser(
               )
             ) {
               default_command_handler(
+                command_string,
                 separated_command,
                 channel_name,
                 twitch_client,
@@ -336,6 +345,7 @@ async function command_parser(
             // Command is not on cooldown for user
             if (default_commands.indexOf(command_name) != -1) {
               default_command_handler(
+                command_string,
                 separated_command,
                 channel_name,
                 twitch_client,
