@@ -41,6 +41,8 @@ const default_permission_of_commands = {
   // '!data': 0,
   "!docs": 0,
   "!expr": 1, // avoid misusage, can be dowgraded
+  "!guess": 0,
+  "!hangman": 2,
   "!flail": 0,
   "!isredbar": 0,
   "!metronome": 0,
@@ -71,6 +73,8 @@ const default_cooldown_of_commands = {
   // '!data': 0,
   "!docs": 0,
   "!expr": 15, // avoid misusage, can be lowered
+  "!guess": 5,
+  "!hangman": 0,
   "!flail": 0,
   "!isredbar": 0,
   "!metronome": 10,

@@ -80,9 +80,9 @@ function endHangman(target, client, reason) {
   const originalWord = hangmanGame.originalWord;
 
   if (reason === 'inactivity') {
-    client.say(target, `Hangman game was running for too long. Next time try to be faster :). The word was: ${originalWord}. Next round starts in ${HANGMAN_COOLDOWN_MINUTES} minutes.`);
+    client.say(target, `Hangman game was running for too long. Next time try to be faster :). The word was: ${originalWord}. Next round can start in ${HANGMAN_COOLDOWN_MINUTES} minutes.`);
   } else {
-    client.say(target, `Hangman round over! You ${result}. The word was: ${originalWord}. Next round starts in ${HANGMAN_COOLDOWN_MINUTES} minutes.`);
+    client.say(target, `Hangman round over! You ${result}. The word was: ${originalWord}. Next round can start in ${HANGMAN_COOLDOWN_MINUTES} minutes.`);
   }
 
   clearTimeout(hangmanChannel.timeoutId); // Clear the inactivity timeout for this channel
