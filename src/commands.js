@@ -207,7 +207,7 @@ function default_command_handler(
       slots.handler(twitch_client, channel_name, userstate.username);
       break;
     case "!roll":
-      roll.handler(separated_command, twitch_client, channel_name);
+      roll.handler(separated_command, twitch_client, channel_name, userstate.username);
       break;
     // case '!src': // Cert problem :(
     //   src.handler(separated_command, twitch_client, channel_name);
