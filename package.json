@@ -16,6 +16,7 @@
     "package.json": "^2.0.1",
     "pg": "^8.7.1",
     "random": "^3.0.6",
+    "random-js": "^2.1.0",
     "tmi.js": "^1.8.5"
   },
   "engines": {
