@@ -98,11 +98,6 @@ function setHangmanCooldown(target, client) {
   let cooldown = HANGMAN_COOLDOWN_MINUTES * 60 * 1000;
   // Set a cooldown for the !hangman command in this channel
   hangmanCooldowns[target] = Date.now() + cooldown;
-
-  // Schedule a message to be sent after the cooldown period is over
-  setTimeout(() => {
-    client.say(target, 'Hangman is available again. Use !hangman to start a new game.');
-  }, cooldown);
 }
 
 // Make a guess on the current hangman game, if any.
