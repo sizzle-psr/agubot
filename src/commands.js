@@ -12,6 +12,7 @@ const { cooldown_handler } = require("./handlers/cooldown");
 const { counter_handler, update_counter } = require("./handlers/counter");
 
 const _229 = require("./complex-cmds/229");
+const catchrate = require("./complex-cmds/catchrate");
 const choose = require("./complex-cmds/choose");
 // const data = require('./complex-cmds/data');
 const expr = require("./complex-cmds/expr");
@@ -130,6 +131,9 @@ function default_command_handler(
         channel_name,
         pg_client
       );
+      break;
+    case "!catchrate":
+      catchrate.handler(command_string, twitch_client);
       break;
     case "!cooldown":
       cooldown_handler(
