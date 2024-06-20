@@ -133,7 +133,7 @@ function default_command_handler(
       );
       break;
     case "!catchrate":
-      catchrate.handler(command_string, twitch_client);
+      catchrate.handler(command_string, twitch_client, channel_name);
       break;
     case "!cooldown":
       cooldown_handler(

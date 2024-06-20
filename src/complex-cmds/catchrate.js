@@ -23,7 +23,7 @@ const techniqueModifiers = {
 const DEFAULT_IV = 15;
 
 // Calculates the catch rate for a pokemon in Let's Go. This is based on this spreadsheet: https://docs.google.com/spreadsheets/d/1ETa7mH0ygBAViFgs28YLpFzr_Op_RxoDhIy6h8123AE
-function handler(command_string, client) {
+function handler(command_string, client, channel_name) {
   try {
     const { groups: { pokemon, level, balls, berry, technique } } = regex.exec(command_string);
     const pokemonInfo = letsgoData.pokemon[pokemon.toLowerCase()];
@@ -73,12 +73,12 @@ function handler(command_string, client) {
 
       const catchrate = Math.pow(shakeSuccess, 4)*100;
 
-      client.say(target, `${pokemon} lvl${actualLevel} ${balls.toUpperCase()}${berry ? " " + berry.toUpperCase() : ""}${technique ? " " + technique.toUpperCase() : ""}: ${catchrate.toFixed(2)}%`);
+      client.say(channel_name, `${pokemon} lvl${actualLevel} ${balls.toUpperCase()}${berry ? " " + berry.toUpperCase() : ""}${technique ? " " + technique.toUpperCase() : ""}: ${catchrate.toFixed(2)}%`);
     } else {
-      client.say(target, `${pokemon} is not a catchable Pokémon`);
+      client.say(channel_name, `${pokemon} is not a catchable Pokémon`);
     }
   } catch (_error) {
-    client.say(target, "Syntax: !catchrate <pokemon> [<level>] <balls> [<berry>] [<technique>]");
+    client.say(channel_name, "Syntax: !catchrate <pokemon> [<level>] <balls> [<berry>] [<technique>]");
   }
 }
 
