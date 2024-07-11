@@ -1,6 +1,6 @@
 const letsgoData = require('../../data/letsgoData.json');
 
-const regex = /^!catchrate (?<pokemon>[^\s]+)( (?<level>\d{1,2}))? (?<balls>(P|G|U){1,2})( (?<berry>R|SR|GR))?( (?<technique>N|G|E))?$/;
+const regex = /^!catchrate (?<pokemon>[^\s]+)( (?<level>\d{1,2}))? (?<balls>(P|G|U){1,2})( (?<berry>R|SR|GR))?( (?<technique>N|G|E))?$/i;
 
 const ballModifiers = {
   "P": 1.0,
@@ -25,7 +25,10 @@ const DEFAULT_IV = 15;
 // Calculates the catch rate for a pokemon in Let's Go. This is based on this spreadsheet: https://docs.google.com/spreadsheets/d/1ETa7mH0ygBAViFgs28YLpFzr_Op_RxoDhIy6h8123AE
 function handler(command_string, client, channel_name) {
   try {
-    const { groups: { pokemon, level, balls, berry, technique } } = regex.exec(command_string);
+    let { groups: { pokemon, level, balls, berry, technique } } = regex.exec(command_string);
+    balls = balls?.toUpperCase();
+    berry = berry?.toUpperCase();
+    technique = technique?.toUpperCase();
     const pokemonInfo = letsgoData.pokemon[pokemon.toLowerCase()];
 
     if (pokemonInfo) {
